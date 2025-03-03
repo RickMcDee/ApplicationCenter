@@ -1,0 +1,9 @@
+services:
+    applicationcenter.api:
+        image: ${DOCKER_REGISTRY-}applicationcenterapi
+        build:
+            context: ApplicationCenter.Api
+            dockerfile: Dockerfile
+        ports:
+            - "5000:5000"
+            - "5001:5001"
