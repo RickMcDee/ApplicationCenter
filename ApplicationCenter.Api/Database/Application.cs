@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using ApplicationCenter.Shared.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApplicationCenter.Api.Database;
 
@@ -9,4 +10,13 @@ internal class Application
     public string Name { get; set; } = string.Empty;
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.Now;
     public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.Now;
+
+    internal ApplicationViewModel ToViewModel()
+    {
+        return new ApplicationViewModel
+        {
+            Id = Id,
+            Name = Name
+        };
+    }
 }

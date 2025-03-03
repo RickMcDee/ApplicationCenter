@@ -1,0 +1,39 @@
+﻿@inject BackendService BackendService;
+@inject ISnackbar Snackbar
+@inject ILogger<ApplicationDialog> Logger
+
+<MudDialog>
+    <DialogContent>
+        <MudTextField T="string"
+                      Label="Name"
+                      @bind-Value="model.Name"
+                      Immediate="true" />
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@string.IsNullOrWhiteSpace(model.Name)">Ok</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private IMudDialogInstance MudDialog { get; set; } = default!;
+
+    private ApplicationViewModel model = new() { Name = string.Empty };
+
+    private async Task Submit()
+    {
+        try
+        {
+            model = await BackendService.AddApplication(model);
+            MudDialog.Close(DialogResult.Ok(model));
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error while saving the application {model.Name}", Severity.Error);
+            Logger.LogError(ex, "Error while saving the application {Name} ({Id})", model.Name, model.Id);
+        }
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}

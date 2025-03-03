@@ -1,0 +1,101 @@
+﻿@inject BackendService BackendService;
+@inject IDialogService DialogService;
+@inject ISnackbar Snackbar
+@inject ILogger<ApplicationDialog> Logger
+
+<MudPaper Width="300px" Class="d-flex">
+    <MudList T="ApplicationViewModel" Class="d-flex flex-column flex-grow-1">
+        <MudPaper Square="true" Class="pb-2 px-2" Style="border-bottom: thin #e0e0e0; border-bottom-right-radius: 1px; border-bottom-left-radius: 1px;">
+            <ListHeader Title="Applications" OnAddClick="@(async () => await ShowAddDialog())" />
+            <MudTextField T="string"
+                          Label="Search"
+                          Variant="Variant.Text"
+                          Margin="Margin.Dense"
+                          Adornment="Adornment.End"
+                          AdornmentIcon="@Icons.Material.Filled.Search"
+                          DebounceInterval="200"
+                          OnDebounceIntervalElapsed="FilterApplications" />
+        </MudPaper>
+        <MudElement Class="overflow-auto">
+            @foreach (var item in filteredApplications)
+            {
+                <MudListItem Value="item" OnClick="(_ => OnApplicationSelected(item))">
+                    <ListItemWithMenu Text="@item.Name" OnDeleteClick="@(async () => await ShowDeleteDialog(item))" />
+                </MudListItem>
+            }
+        </MudElement>
+    </MudList>
+</MudPaper>
+
+@code {
+    [Parameter]
+    public Action<ApplicationViewModel> OnApplicationSelected { get; set; } = default!;
+
+    private List<ApplicationViewModel> applications = new List<ApplicationViewModel>();
+    private List<ApplicationViewModel> filteredApplications = new List<ApplicationViewModel>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            applications = await BackendService.GetApplications();
+            filteredApplications = applications;
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error while loading applications", Severity.Error);
+            Logger.LogError(ex, "Error while loading applications");
+        }
+    }
+
+    private async Task ShowDeleteDialog(ApplicationViewModel application)
+    {
+        var confirmation = await DialogService.ShowMessageBox(
+            "Delete Application",
+            $"This will remove the application {application.Name} and all its configuration keys.",
+            yesText: "Okay", noText: "Cancel");
+
+        if (confirmation.HasValue && confirmation.Value)
+        {
+            try
+            {
+                await BackendService.RemoveApplication(application.Id);
+                applications.Remove(application);
+                filteredApplications.Remove(application);
+
+                StateHasChanged();
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"Error while deleting the application {application.Name}", Severity.Error);
+                Logger.LogError(ex, "Error while deleting the application {Name} ({Id})", application.Name, application.Id);
+            }
+        }
+    }
+
+    private async Task ShowAddDialog()
+    {
+        var dialog = await DialogService.ShowAsync<ApplicationDialog>("Add Application");
+        var result = await dialog.Result;
+
+        if (result is not null && result.Canceled is false)
+        {
+            var newApplication = (result.Data as ApplicationViewModel)!;
+            applications.Add(newApplication);
+            applications = applications.OrderBy(x => x.Name).ToList();
+            FilterApplications(string.Empty);
+
+            OnApplicationSelected(newApplication);
+        }
+    }
+
+    private void FilterApplications(string filterText)
+    {
+        if (string.IsNullOrEmpty(filterText))
+        {
+            filteredApplications = applications;
+        }
+
+        filteredApplications = applications.Where(x => x.Name.Contains(filterText)).ToList();
+    }
+}

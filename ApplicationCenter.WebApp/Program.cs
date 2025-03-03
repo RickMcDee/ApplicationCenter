@@ -1,4 +1,5 @@
-﻿using ApplicationCenter.WebApp.Components;
+﻿using ApplicationCenter.WebApp;
+using ApplicationCenter.WebApp.Components;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +10,13 @@ builder.Services.AddMudServices();
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddScoped<BackendService>();
+builder.Services.AddHttpClient("BackendClient", config =>
+{
+    var backendUrl = builder.Configuration.GetValue<string>("ServiceConfiguration:BackendUrl") ?? throw new Exception($"Missing key in AppSettings: ServiceConfiguration:BackendUrl");
+    config.BaseAddress = new Uri(backendUrl);
+});
 
 var app = builder.Build();
 

@@ -1,0 +1,16 @@
+﻿@page "/configuration"
+
+<MudContainer Fixed="true" Class="d-flex flex-row gap-3 pl-1 py-4" Style="height: 100%">
+    <ApplicationList OnApplicationSelected="(async (app) => await SetApplication(app))" />
+</MudContainer>
+
+@code {
+    private ApplicationViewModel? selectedApplication;
+
+    private async Task SetApplication(ApplicationViewModel newApplication)
+    {
+        selectedApplication = newApplication;
+
+        StateHasChanged();
+    }
+}

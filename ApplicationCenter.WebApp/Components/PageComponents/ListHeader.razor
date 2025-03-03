@@ -1,0 +1,12 @@
+﻿<MudElement Class="d-flex justify-space-between align-center flex-wrap">
+    <MudText Class="ml-2" Typo="Typo.h6">@Title</MudText>
+    <MudIconButton Icon="@Icons.Material.Filled.Add" OnClick="OnAddClick"></MudIconButton>
+</MudElement>
+
+@code {
+    [Parameter]
+    public required string Title { get; set; }
+
+    [Parameter]
+    public Action OnAddClick { get; set; } = default!;
+}
