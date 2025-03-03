@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddTransient<IApplicationService, ApplicationService>();
+builder.Services.AddTransient<IConfigurationKeyService, ConfigurationKeyService>();
 
 builder.Services.AddDbContextFactory<DatabaseContext>(opt =>
 {
@@ -21,19 +22,6 @@ builder.Services.AddDbContextFactory<DatabaseContext>(opt =>
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-//builder.Services.AddAuthorization();
-//builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-//    .AddJwtBearer(config =>
-//    {
-//        config.TokenValidationParameters = new TokenValidationParameters
-//        {
-//            ValidateAudience = false,
-//            ValidateIssuer = false,
-//            ValidateIssuerSigningKey = false,
-//            ValidateLifetime = false,
-//        };
-//    });
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -44,8 +32,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.MapApplicationEndpoints();
-
-//app.UseAuthentication();
-//app.UseAuthorization();
+app.MapConfigurationKeyEndpoints();
 
 app.Run();

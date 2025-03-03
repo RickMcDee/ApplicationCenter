@@ -1,4 +1,4 @@
-﻿@inject ApplicationService BackendService;
+﻿@inject ConfigurationKeyService BackendService;
 @inject ISnackbar Snackbar
 @inject ILogger<ApplicationDialog> Logger
 
@@ -19,13 +19,16 @@
     [CascadingParameter]
     private IMudDialogInstance MudDialog { get; set; } = default!;
 
-    private ApplicationViewModel model = new() { Name = string.Empty };
+    [Parameter]
+    public required Guid ApplicationId { get; set; }
+
+    private ConfigurationKeyViewModel model = new() { Name = string.Empty };
 
     private async Task Submit()
     {
         try
         {
-            model = await BackendService.AddApplication(model);
+            model = await BackendService.AddConfigurationKey(model, ApplicationId);
             MudDialog.Close(DialogResult.Ok(model));
         }
         catch (Exception ex)
