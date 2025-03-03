@@ -1,9 +1,31 @@
 services:
     applicationcenter.api:
         image: ${DOCKER_REGISTRY-}applicationcenterapi
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - ASPNETCORE_HTTP_PORTS=5000
         build:
             context: ApplicationCenter.Api
             dockerfile: Dockerfile
         ports:
             - "5000:5000"
             - "5001:5001"
+        volumes:
+            - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+            - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+    applicationcenter.webapp:
+        image: ${DOCKER_REGISTRY-}applicationcenterwebapp
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - ASPNETCORE_HTTP_PORTS=5010
+        build:
+            context: ApplicationCenter.WebApp
+            dockerfile: Dockerfile
+        ports:
+            - "5010:5010"
+            - "5011:5011"
+        volumes:
+            - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
+            - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+

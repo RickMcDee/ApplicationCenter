@@ -4,7 +4,8 @@
       "commandName": "DockerCompose",
       "commandVersion": "1.0",
       "serviceActions": {
-        "applicationcenter.api": "StartDebugging"
+        "applicationcenter.api": "StartDebugging",
+        "applicationcenter.webapp": "StartDebugging"
       }
     }
   }
