@@ -1,6 +1,4 @@
 using ApplicationCenter.Api.Database;
-using ApplicationCenter.Api.Endpoints;
-using ApplicationCenter.Api.Services;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);

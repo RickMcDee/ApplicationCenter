@@ -1,6 +1,4 @@
-﻿using ApplicationCenter.Api.Services;
-using ApplicationCenter.Shared.Models;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 
 namespace ApplicationCenter.Api.Endpoints;
 

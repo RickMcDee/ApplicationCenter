@@ -1,6 +1,4 @@
-﻿using ApplicationCenter.Shared.Enums;
-using ApplicationCenter.Shared.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace ApplicationCenter.Api.Database;
 

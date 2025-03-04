@@ -1,6 +1,4 @@
-﻿using ApplicationCenter.Shared.Models;
-
-namespace ApplicationCenter.Api.Services;
+﻿namespace ApplicationCenter.Api.Services;
 
 public interface IApplicationService
 {

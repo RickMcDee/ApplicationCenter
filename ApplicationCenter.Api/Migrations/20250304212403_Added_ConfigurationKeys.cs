@@ -1,21 +1,37 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
 namespace ApplicationCenter.Api.Migrations
 {
     /// <inheritdoc />
-    public partial class ConfigurationKeys : Migration
+    public partial class Added_ConfigurationKeys : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AddColumn<string>(
+                name: "Description",
+                table: "Applications",
+                type: "text",
+                nullable: false,
+                defaultValue: "");
+
+            migrationBuilder.AddColumn<int>(
+                name: "Type",
+                table: "Applications",
+                type: "integer",
+                nullable: false,
+                defaultValue: 0);
+
             migrationBuilder.CreateTable(
                 name: "ConfigurationKeys",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
+                    Description = table.Column<string>(type: "text", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     UpdatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     Value = table.Column<string>(type: "text", nullable: false),
@@ -43,6 +59,14 @@ namespace ApplicationCenter.Api.Migrations
         {
             migrationBuilder.DropTable(
                 name: "ConfigurationKeys");
+
+            migrationBuilder.DropColumn(
+                name: "Description",
+                table: "Applications");
+
+            migrationBuilder.DropColumn(
+                name: "Type",
+                table: "Applications");
         }
     }
 }
