@@ -51,7 +51,7 @@ internal class ConfigurationKeyService(IDbContextFactory<Database.DatabaseContex
     public async Task<IEnumerable<ConfigurationKeyViewModel>> GetConfigurationKeys(Guid applicationId)
     {
         var context = await _dbContextFactory.CreateDbContextAsync();
-        var result = await context.ConfigurationKeys.Where(i => i.ApplicationId == applicationId).Select(i => i.ToViewModel()).ToListAsync();
+        var result = await context.ConfigurationKeys.Where(i => i.ApplicationId == applicationId).OrderBy(i => i.Name).Select(i => i.ToViewModel()).ToListAsync();
 
         return result;
     }

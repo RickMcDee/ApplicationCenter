@@ -46,7 +46,7 @@ internal class ApplicationService(IDbContextFactory<Database.DatabaseContext> db
     public async Task<IEnumerable<ApplicationViewModel>> GetApplications()
     {
         var context = await _dbContextFactory.CreateDbContextAsync();
-        var result = await context.Applications.Select(i => i.ToViewModel()).ToListAsync();
+        var result = await context.Applications.OrderBy(i => i.Name).Select(i => i.ToViewModel()).ToListAsync();
 
         return result;
     }
