@@ -1,8 +1,14 @@
 ﻿<MudElement Class="d-flex justify-space-between align-end">
     @Text
     <MudMenu Icon="@Icons.Material.Filled.MoreVert" Dense="true" Size="Size.Small">
-        <MudMenuItem Icon="@Icons.Material.Filled.Edit" IconSize="Size.Small">Edit</MudMenuItem>
-        <MudMenuItem Icon="@Icons.Material.Filled.Delete" IconSize="Size.Small" OnClick="OnDeleteClick">Delete</MudMenuItem>
+        @if (OnEditClick is not null)
+        {
+            <MudMenuItem Icon="@Icons.Material.Filled.Edit" IconSize="Size.Small" OnClick="OnEditClick">Edit</MudMenuItem>
+        }
+        @if (OnDeleteClick is not null)
+        {
+            <MudMenuItem Icon="@Icons.Material.Filled.Delete" IconSize="Size.Small" OnClick="OnDeleteClick">Delete</MudMenuItem>
+        }
     </MudMenu>
 </MudElement>
 
@@ -12,4 +18,7 @@
 
     [Parameter]
     public Action OnDeleteClick { get; set; } = default!;
+
+    [Parameter]
+    public Action OnEditClick { get; set; } = default!;
 }

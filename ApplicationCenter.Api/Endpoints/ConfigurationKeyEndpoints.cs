@@ -17,7 +17,7 @@ public static class ConfigurationKeyEndpoints
         group.MapDelete("/{configurationKeyId}", RemoveConfigurationKey);
     }
 
-    private static async Task<IResult> AddOrUpdateConfigurationKey([FromServices] IConfigurationKeyService service, [FromBody] ConfigurationKeyViewModel configurationKey, [FromQuery] Guid applicationId)
+    private static async Task<IResult> AddOrUpdateConfigurationKey([FromServices] IConfigurationKeyService service, [FromBody] ConfigurationKeyViewModel configurationKey, [FromQuery] Guid? applicationId)
     {
         var newModel = await service.AddOrUpdateConfigurationKey(configurationKey, applicationId);
 

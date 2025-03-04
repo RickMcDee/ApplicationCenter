@@ -22,11 +22,11 @@ public class ConfigurationKeyService(IHttpClientFactory factory)
         return response;
     }
 
-    public async Task<ConfigurationKeyViewModel> AddConfigurationKey(ConfigurationKeyViewModel configurationKey, Guid applicationId)
+    public async Task<ConfigurationKeyViewModel> AddOrUpdateConfigurationKey(ConfigurationKeyViewModel configurationKey, Guid? applicationId = null)
     {
         var parameters = new Dictionary<string, string?>
         {
-            ["applicationId"] = applicationId.ToString(),
+            ["applicationId"] = applicationId?.ToString(),
         };
 
         var queryString = QueryHelpers.AddQueryString(_configurationKeysEndpoint, parameters);

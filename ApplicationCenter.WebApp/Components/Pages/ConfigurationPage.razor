@@ -8,10 +8,10 @@
         </MudText>
         <MudElement Class="d-flex flex-row flex-grow-1">
             <ConfigurationKeyList @ref="configurationKeyList" OnConfigurationKeySelected="SetConfigurationKey" />
-            @* @if (selectedKey != null) *@
-            @* { *@
-            @*     <MonacoEditor ConfigurationKey="selectedKey" /> *@
-            @* } *@
+            @if (selectedKey != null)
+            {
+                <MonacoEditor ConfigurationKey="selectedKey" />
+            }
         </MudElement>
     </MudPaper>
 </MudContainer>

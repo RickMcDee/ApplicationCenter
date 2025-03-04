@@ -26,7 +26,7 @@
             @foreach (var item in filteredConfigurationKeys)
             {
                 <MudListItem Value="item" Text="@item.Name" OnClick="(_ => OnConfigurationKeySelected(item))">
-                    <ListItemWithMenu Text="@item.Name" OnDeleteClick="@(async () => await ShowDeleteDialog(item))" />
+                    <ListItemWithMenu Text="@item.Name" OnEditClick="(async () => await ShowEditDialog(item))" OnDeleteClick="(async () => await ShowDeleteDialog(item))" />
                 </MudListItem>
             }
         </MudElement>
@@ -84,8 +84,7 @@
     private async Task ShowAddDialog()
     {
         var parameters = new DialogParameters<ConfigurationKeyDialog> { { x => x.ApplicationId, ApplicationId }, };
-
-        var dialog = await DialogService.ShowAsync<ConfigurationKeyDialog>("Add Key", parameters);
+        var dialog = await DialogService.ShowAsync<ConfigurationKeyDialog>("Add ConfigurationKey", parameters);
         var result = await dialog.Result;
 
         if (result is not null && result.Canceled is false)
@@ -97,6 +96,13 @@
 
             OnConfigurationKeySelected(newKey);
         }
+    }
+
+    private async Task ShowEditDialog(ConfigurationKeyViewModel configurationKey)
+    {
+        var parameters = new DialogParameters<ConfigurationKeyDialog> { { x => x.ApplicationId, ApplicationId }, { x => x.Model, configurationKey } };
+        var dialog = await DialogService.ShowAsync<ConfigurationKeyDialog>("Edit ConfigurationKey", parameters);
+        var result = await dialog.Result;
     }
 
     private void FilterConfigurationKeys(string filterText)

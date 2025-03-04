@@ -6,12 +6,12 @@
     <DialogContent>
         <MudTextField T="string"
                       Label="Name"
-                      @bind-Value="model.Name"
+                      @bind-Value="Model.Name"
                       Immediate="true" />
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@string.IsNullOrWhiteSpace(model.Name)">Ok</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@string.IsNullOrWhiteSpace(Model.Name)">Ok</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -22,19 +22,20 @@
     [Parameter]
     public required Guid ApplicationId { get; set; }
 
-    private ConfigurationKeyViewModel model = new() { Name = string.Empty };
+    [Parameter]
+    public ConfigurationKeyViewModel Model { get; set; } = new() { Name = string.Empty };
 
     private async Task Submit()
     {
         try
         {
-            model = await BackendService.AddConfigurationKey(model, ApplicationId);
-            MudDialog.Close(DialogResult.Ok(model));
+            Model = await BackendService.AddOrUpdateConfigurationKey(Model, ApplicationId);
+            MudDialog.Close(DialogResult.Ok(Model));
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Error while saving the application {model.Name}", Severity.Error);
-            Logger.LogError(ex, "Error while saving the application {Name} ({Id})", model.Name, model.Id);
+            Snackbar.Add($"Error while saving the application {Model.Name}", Severity.Error);
+            Logger.LogError(ex, "Error while saving the application {Name} ({Id})", Model.Name, Model.Id);
         }
     }
 

@@ -8,30 +8,35 @@ internal class ConfigurationKeyService(IDbContextFactory<Database.DatabaseContex
 {
     private readonly IDbContextFactory<Database.DatabaseContext> _dbContextFactory = dbContextFactory;
 
-    public async Task<ConfigurationKeyViewModel> AddOrUpdateConfigurationKey(ConfigurationKeyViewModel configurationKey, Guid applicationId)
+    public async Task<ConfigurationKeyViewModel> AddOrUpdateConfigurationKey(ConfigurationKeyViewModel configurationKey, Guid? applicationId)
     {
         Database.ConfigurationKey dbEntity;
 
         using var context = await _dbContextFactory.CreateDbContextAsync();
-        if (configurationKey.Id == Guid.Empty)
+        if (configurationKey.Id == Guid.Empty && applicationId.HasValue)
         {
             dbEntity = new()
             {
                 Id = Guid.NewGuid(),
                 CreatedAt = DateTimeOffset.Now,
                 UpdatedAt = DateTimeOffset.Now,
-                ApplicationId = applicationId
+                ApplicationId = applicationId.Value
             };
 
             await context.ConfigurationKeys.AddAsync(dbEntity);
         }
-        else
+        else if (configurationKey.Id != Guid.Empty)
         {
             dbEntity = await context.ConfigurationKeys.FindAsync(configurationKey.Id) ?? throw new Exception($"No Configuration Key with id {configurationKey.Id} in database");
+        }
+        else
+        {
+            throw new Exception("ConfigurationKeyId and ApplicationId cannot both be empty");
         }
 
         var updateCount = 0;
         dbEntity.Name = ComparisonHelper.TakeNewValueIfChanged(dbEntity.Name, configurationKey.Name, ref updateCount);
+        dbEntity.Value = ComparisonHelper.TakeNewValueIfChanged(dbEntity.Value, configurationKey.Value, ref updateCount);
 
         if (updateCount > 0)
         {
