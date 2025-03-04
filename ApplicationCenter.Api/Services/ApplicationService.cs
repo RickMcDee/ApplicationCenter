@@ -31,6 +31,8 @@ internal class ApplicationService(IDbContextFactory<Database.DatabaseContext> db
 
         var updateCount = 0;
         dbEntity.Name = ComparisonHelper.TakeNewValueIfChanged(dbEntity.Name, application.Name, ref updateCount);
+        dbEntity.Type = ComparisonHelper.TakeNewValueIfChanged(dbEntity.Type, application.Type, ref updateCount);
+        dbEntity.Description = ComparisonHelper.TakeNewValueIfChanged(dbEntity.Description, application.Description, ref updateCount);
 
         if (updateCount > 0)
         {

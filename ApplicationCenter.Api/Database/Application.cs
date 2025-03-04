@@ -1,4 +1,5 @@
-﻿using ApplicationCenter.Shared.Models;
+﻿using ApplicationCenter.Shared.Enums;
+using ApplicationCenter.Shared.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace ApplicationCenter.Api.Database;
@@ -8,6 +9,8 @@ internal class Application
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public string Name { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public ApplicationType Type { get; set; } = ApplicationType.Unknown;
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.Now;
     public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.Now;
 
@@ -18,7 +21,11 @@ internal class Application
         return new ApplicationViewModel
         {
             Id = Id,
-            Name = Name
+            Name = Name,
+            Description = Description,
+            Type = Type,
+            CreatedAt = CreatedAt,
+            UpdatedAt = UpdatedAt
         };
     }
 }

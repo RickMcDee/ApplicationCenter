@@ -2,8 +2,12 @@
 
 <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
 <MudPopoverProvider />
-<MudDialogProvider />
 <MudSnackbarProvider />
+<MudDialogProvider FullWidth="true"
+                   MaxWidth="MaxWidth.Medium"
+                   Position="DialogPosition.Center"
+                   BackdropClick="false"
+                   CloseOnEscapeKey="true" />
 
 <MudLayout>
     <MudAppBar Elevation="1">

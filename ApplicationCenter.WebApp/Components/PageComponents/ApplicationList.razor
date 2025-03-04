@@ -20,7 +20,7 @@
             @foreach (var item in filteredApplications)
             {
                 <MudListItem Value="item" OnClick="(_ => OnApplicationSelected(item))">
-                    <ListItemWithMenu Text="@item.Name" OnDeleteClick="@(async () => await ShowDeleteDialog(item))" />
+                    <ListItemWithMenu Text="@item.Name" OnEditClick="(async () => await ShowEditDialog(item))" OnDeleteClick="(async () => await ShowDeleteDialog(item))" />
                 </MudListItem>
             }
         </MudElement>
@@ -87,6 +87,13 @@
 
             OnApplicationSelected(newApplication);
         }
+    }
+
+    private async Task ShowEditDialog(ApplicationViewModel application)
+    {
+        var parameters = new DialogParameters<ApplicationDialog> { { x => x.Model, application }, };
+        var dialog = await DialogService.ShowAsync<ApplicationDialog>("Edit Application", parameters);
+        var result = await dialog.Result;
     }
 
     private void FilterApplications(string filterText)

@@ -4,14 +4,34 @@
 
 <MudDialog>
     <DialogContent>
-        <MudTextField T="string"
-                      Label="Name"
-                      @bind-Value="model.Name"
-                      Immediate="true" />
+        <MudGrid Class="d-flex flex-column">
+            <MudItem xs="4">
+                <MudTextField T="string"
+                              Label="Name"
+                              @bind-Value="Model.Name"
+                              Immediate="true" />
+            </MudItem>
+            <MudItem xs="4">
+                <MudSelect @bind-Value="Model.Type" Label="Applicationtype">
+                    @foreach (ApplicationType item in Enum.GetValues(typeof(ApplicationType)))
+                    {
+                        <MudSelectItem Value="@item">@item</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12">
+                <MudTextField T="string"
+                              Label="Description"
+                              @bind-Value="Model.Description"
+                              Variant="Variant.Outlined"
+                              Immediate="true"
+                              Lines="5" />
+            </MudItem>
+        </MudGrid>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@string.IsNullOrWhiteSpace(model.Name)">Ok</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@string.IsNullOrWhiteSpace(Model.Name)">Ok</MudButton>
     </DialogActions>
 </MudDialog>
 
@@ -19,19 +39,20 @@
     [CascadingParameter]
     private IMudDialogInstance MudDialog { get; set; } = default!;
 
-    private ApplicationViewModel model = new() { Name = string.Empty };
+    [Parameter]
+    public ApplicationViewModel Model { get; set; } = new() { Name = string.Empty };
 
     private async Task Submit()
     {
         try
         {
-            model = await BackendService.AddApplication(model);
-            MudDialog.Close(DialogResult.Ok(model));
+            Model = await BackendService.AddApplication(Model);
+            MudDialog.Close(DialogResult.Ok(Model));
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Error while saving the application {model.Name}", Severity.Error);
-            Logger.LogError(ex, "Error while saving the application {Name} ({Id})", model.Name, model.Id);
+            Snackbar.Add($"Error while saving the application {Model.Name}", Severity.Error);
+            Logger.LogError(ex, "Error while saving the application {Name} ({Id})", Model.Name, Model.Id);
         }
     }
 

@@ -4,10 +4,23 @@
 
 <MudDialog>
     <DialogContent>
-        <MudTextField T="string"
-                      Label="Name"
-                      @bind-Value="Model.Name"
-                      Immediate="true" />
+        <MudGrid Class="d-flex flex-column">
+            <MudItem xs="4">
+                <MudTextField T="string"
+                              Label="Name"
+                              @bind-Value="Model.Name"
+                              Variant="Variant.Outlined"
+                              Immediate="true" />
+            </MudItem>
+            <MudItem xs="12">
+                <MudTextField T="string"
+                              Label="Description"
+                              @bind-Value="Model.Description"
+                              Variant="Variant.Outlined"
+                              Immediate="true"
+                              Lines="5" />
+            </MudItem>
+        </MudGrid>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>

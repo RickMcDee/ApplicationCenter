@@ -37,6 +37,7 @@ internal class ConfigurationKeyService(IDbContextFactory<Database.DatabaseContex
         var updateCount = 0;
         dbEntity.Name = ComparisonHelper.TakeNewValueIfChanged(dbEntity.Name, configurationKey.Name, ref updateCount);
         dbEntity.Value = ComparisonHelper.TakeNewValueIfChanged(dbEntity.Value, configurationKey.Value, ref updateCount);
+        dbEntity.Description = ComparisonHelper.TakeNewValueIfChanged(dbEntity.Description, configurationKey.Description, ref updateCount);
 
         if (updateCount > 0)
         {
