@@ -26,6 +26,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+
+    await using var scope = app.Services.CreateAsyncScope();
+    await using var dbContext = scope.ServiceProvider.GetRequiredService<DatabaseContext>();
+    await dbContext.Database.EnsureCreatedAsync();
 }
 
 app.UseHttpsRedirection();
