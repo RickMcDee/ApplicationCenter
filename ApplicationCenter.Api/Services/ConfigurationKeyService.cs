@@ -10,7 +10,7 @@ internal class ConfigurationKeyService(IDbContextFactory<Database.DatabaseContex
     {
         Database.ConfigurationKey dbEntity;
 
-        using var context = await _dbContextFactory.CreateDbContextAsync();
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
         if (configurationKey.Id == Guid.Empty && applicationId.HasValue)
         {
             dbEntity = new()
@@ -27,9 +27,8 @@ internal class ConfigurationKeyService(IDbContextFactory<Database.DatabaseContex
         else if (configurationKey.Id != Guid.Empty)
         {
             dbEntity = await context.ConfigurationKeys
-                           .Include(i => i.Values)
-                           .FirstOrDefaultAsync(i => i.Id == configurationKey.Id) ??
-                       throw new Exception($"No Configuration Key with id {configurationKey.Id} in database");
+                .Include(i => i.Values)
+                .FirstOrDefaultAsync(i => i.Id == configurationKey.Id) ?? throw new KeyNotFoundException($"No Configuration Key with id {configurationKey.Id} in database");
         }
         else
         {
@@ -38,7 +37,6 @@ internal class ConfigurationKeyService(IDbContextFactory<Database.DatabaseContex
 
         var updateCount = 0;
         dbEntity.Name = ComparisonHelper.TakeNewValueIfChanged(dbEntity.Name, configurationKey.Name, ref updateCount);
-        dbEntity.Value = ComparisonHelper.TakeNewValueIfChanged(dbEntity.Value, configurationKey.Value, ref updateCount);
         dbEntity.Description = ComparisonHelper.TakeNewValueIfChanged(dbEntity.Description, configurationKey.Description, ref updateCount);
 
         if (updateCount > 0)
@@ -73,7 +71,7 @@ internal class ConfigurationKeyService(IDbContextFactory<Database.DatabaseContex
 
     public async Task<IEnumerable<ConfigurationKeyViewModel>> GetConfigurationKeys(Guid applicationId)
     {
-        var context = await _dbContextFactory.CreateDbContextAsync();
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
         var result = await context.ConfigurationKeys
             .Include(i => i.Values)
             .Where(i => i.ApplicationId == applicationId).OrderBy(i => i.Name)
@@ -85,9 +83,9 @@ internal class ConfigurationKeyService(IDbContextFactory<Database.DatabaseContex
 
     public async Task RemoveConfigurationKey(Guid configurationKeyId)
     {
-        var context = await _dbContextFactory.CreateDbContextAsync();
-        var dbEntity = await context.ConfigurationKeys.FindAsync(configurationKeyId) ?? throw new Exception($"No Configuration Key with id {configurationKeyId} in database");
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
+        var dbEntity = await context.ConfigurationKeys.FindAsync(configurationKeyId) ?? throw new KeyNotFoundException($"No Configuration Key with id {configurationKeyId} in database");
         context.ConfigurationKeys.Remove(dbEntity);
-        context.SaveChanges();
+        await context.SaveChangesAsync();
     }
 }

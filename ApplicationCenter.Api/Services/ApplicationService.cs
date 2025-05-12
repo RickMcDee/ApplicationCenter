@@ -10,7 +10,7 @@ internal class ApplicationService(IDbContextFactory<Database.DatabaseContext> db
     {
         Database.Application dbEntity;
 
-        using var context = await _dbContextFactory.CreateDbContextAsync();
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
         if (application.Id == Guid.Empty)
         {
             dbEntity = new()
@@ -24,7 +24,7 @@ internal class ApplicationService(IDbContextFactory<Database.DatabaseContext> db
         }
         else
         {
-            dbEntity = await context.Applications.FindAsync(application.Id) ?? throw new Exception($"No Application with id {application.Id} in database");
+            dbEntity = await context.Applications.FindAsync(application.Id) ?? throw new KeyNotFoundException($"No Application with id {application.Id} in database");
         }
 
         var updateCount = 0;
@@ -43,7 +43,7 @@ internal class ApplicationService(IDbContextFactory<Database.DatabaseContext> db
 
     public async Task<IEnumerable<ApplicationViewModel>> GetApplications()
     {
-        var context = await _dbContextFactory.CreateDbContextAsync();
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
         var result = await context.Applications.OrderBy(i => i.Name).Select(i => i.ToViewModel()).ToListAsync();
 
         return result;
@@ -51,9 +51,9 @@ internal class ApplicationService(IDbContextFactory<Database.DatabaseContext> db
 
     public async Task RemoveApplication(Guid applicationId)
     {
-        var context = await _dbContextFactory.CreateDbContextAsync();
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
         var dbEntity = await context.Applications.FindAsync(applicationId) ?? throw new Exception($"No Application with id {applicationId} in database");
         context.Applications.Remove(dbEntity);
-        context.SaveChanges();
+        await context.SaveChangesAsync();
     }
 }
