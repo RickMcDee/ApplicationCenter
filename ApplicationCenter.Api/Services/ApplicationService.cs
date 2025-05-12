@@ -44,7 +44,11 @@ internal class ApplicationService(IDbContextFactory<Database.DatabaseContext> db
     public async Task<IEnumerable<ApplicationViewModel>> GetApplications()
     {
         await using var context = await _dbContextFactory.CreateDbContextAsync();
-        var result = await context.Applications.OrderBy(i => i.Name).Select(i => i.ToViewModel()).ToListAsync();
+        var result = await context.Applications
+            .Include(i => i.ConfigurationKeys)
+            .OrderBy(i => i.Name)
+            .Select(i => i.ToViewModel())
+            .ToListAsync();
 
         return result;
     }
@@ -52,7 +56,7 @@ internal class ApplicationService(IDbContextFactory<Database.DatabaseContext> db
     public async Task RemoveApplication(Guid applicationId)
     {
         await using var context = await _dbContextFactory.CreateDbContextAsync();
-        var dbEntity = await context.Applications.FindAsync(applicationId) ?? throw new Exception($"No Application with id {applicationId} in database");
+        var dbEntity = await context.Applications.FindAsync(applicationId) ?? throw new KeyNotFoundException($"No Application with id {applicationId} in database");
         context.Applications.Remove(dbEntity);
         await context.SaveChangesAsync();
     }
