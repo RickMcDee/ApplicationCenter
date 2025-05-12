@@ -18,6 +18,7 @@ internal class ConfigurationKeyService(IDbContextFactory<Database.DatabaseContex
                 Id = Guid.NewGuid(),
                 CreatedAt = DateTimeOffset.Now,
                 UpdatedAt = DateTimeOffset.Now,
+                Values = AddConfigurationKeyValues(),
                 ApplicationId = applicationId.Value
             };
 
@@ -25,7 +26,10 @@ internal class ConfigurationKeyService(IDbContextFactory<Database.DatabaseContex
         }
         else if (configurationKey.Id != Guid.Empty)
         {
-            dbEntity = await context.ConfigurationKeys.FindAsync(configurationKey.Id) ?? throw new Exception($"No Configuration Key with id {configurationKey.Id} in database");
+            dbEntity = await context.ConfigurationKeys
+                           .Include(i => i.Values)
+                           .FirstOrDefaultAsync(i => i.Id == configurationKey.Id) ??
+                       throw new Exception($"No Configuration Key with id {configurationKey.Id} in database");
         }
         else
         {
@@ -46,10 +50,35 @@ internal class ConfigurationKeyService(IDbContextFactory<Database.DatabaseContex
         return dbEntity.ToViewModel();
     }
 
+    private static List<Database.ConfigurationKeyValue> AddConfigurationKeyValues()
+    {
+        var result = new List<Database.ConfigurationKeyValue>();
+        var stages = Enum.GetValues<ApplicationStage>();
+        foreach (var stage in stages)
+        {
+            var dbValue = new Database.ConfigurationKeyValue()
+            {
+                Id = Guid.NewGuid(),
+                Stage = stage,
+                Value = string.Empty,
+                CreatedAt = DateTimeOffset.Now,
+                UpdatedAt = DateTimeOffset.Now,
+            };
+
+            result.Add(dbValue);
+        }
+
+        return result;
+    }
+
     public async Task<IEnumerable<ConfigurationKeyViewModel>> GetConfigurationKeys(Guid applicationId)
     {
         var context = await _dbContextFactory.CreateDbContextAsync();
-        var result = await context.ConfigurationKeys.Where(i => i.ApplicationId == applicationId).OrderBy(i => i.Name).Select(i => i.ToViewModel()).ToListAsync();
+        var result = await context.ConfigurationKeys
+            .Include(i => i.Values)
+            .Where(i => i.ApplicationId == applicationId).OrderBy(i => i.Name)
+            .Select(i => i.ToViewModel())
+            .ToListAsync();
 
         return result;
     }

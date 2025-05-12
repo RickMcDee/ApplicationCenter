@@ -6,7 +6,7 @@
 
 <style>
     .monaco-editor-container {
-        height: 100px;
+        height: 140px;
         border: 1px solid gray;
     }
 </style>
@@ -14,44 +14,86 @@
 <MudElement Class="flex-grow-1 mx-4">
     <MudItem Style="margin-top: 3rem;" Class="d-flex justify-space-between align-end">
         <MudText></MudText>
-        <MudText Typo="Typo.h6" Class="mb-2">@ConfigurationKey.Name</MudText>
-        <MudText Typo="Typo.caption" Style="font-style: italic">Last changed: @ConfigurationKey.UpdatedAt.ToString("dd.MM.yyyy HH:mm")</MudText>
+        <MudText Typo="Typo.h6" Class="mb-2">@ApplicationStage.Production</MudText>
+        <MudText Typo="Typo.caption" Style="font-style: italic">Last
+            changed: @GetStageValue(ApplicationStage.Production).UpdatedAt.ToString("dd.MM.yyyy HH:mm")</MudText>
     </MudItem>
-    <StandaloneCodeEditor @ref="editor" Id="my-editor-instance-id" ConstructionOptions="EditorConstructionOptions" OnDidInit="EditorOnDidInit" />
+    <StandaloneCodeEditor @ref="prodEditor" Id=@("prod-editor-instance-id")
+                          ConstructionOptions="EditorConstructionOptions" OnDidInit="() => EditorOnDidInit(ApplicationStage.Production)"/>
     <MudElement Class="d-flex justify-center mt-2">
-        <MudButton Variant="Variant.Filled" Class="mr-8" OnClick="ResetValue">Reset</MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SaveValue">Save</MudButton>
+        <MudButton Variant="Variant.Filled" Class="mr-8" OnClick="() => ResetValue(ApplicationStage.Production)">Reset</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => SaveValue(ApplicationStage.Production)">Save</MudButton>
+    </MudElement>
+    
+    <MudItem Style="margin-top: 1rem;" Class="d-flex justify-space-between align-end">
+        <MudText></MudText>
+        <MudText Typo="Typo.h6" Class="mb-2">@ApplicationStage.Staging</MudText>
+        <MudText Typo="Typo.caption" Style="font-style: italic">Last
+            changed: @GetStageValue(ApplicationStage.Staging).UpdatedAt.ToString("dd.MM.yyyy HH:mm")</MudText>
+    </MudItem>
+    <StandaloneCodeEditor @ref="stagingEditor" Id=@("staging-editor-instance-id")
+                          ConstructionOptions="EditorConstructionOptions" OnDidInit="() => EditorOnDidInit(ApplicationStage.Staging)"/>
+    <MudElement Class="d-flex justify-center mt-2">
+        <MudButton Variant="Variant.Filled" Class="mr-8" OnClick="() => ResetValue(ApplicationStage.Staging)">Reset</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => SaveValue(ApplicationStage.Staging)">Save</MudButton>
+    </MudElement>
+    
+    <MudItem Style="margin-top: 1rem;" Class="d-flex justify-space-between align-end">
+        <MudText></MudText>
+        <MudText Typo="Typo.h6" Class="mb-2">@ApplicationStage.Development</MudText>
+        <MudText Typo="Typo.caption" Style="font-style: italic">Last
+            changed: @GetStageValue(ApplicationStage.Development).UpdatedAt.ToString("dd.MM.yyyy HH:mm")</MudText>
+    </MudItem>
+    <StandaloneCodeEditor @ref="devEditor" Id=@("dev-editor-instance-id")
+                          ConstructionOptions="EditorConstructionOptions" OnDidInit="() => EditorOnDidInit(ApplicationStage.Development)"/>
+    <MudElement Class="d-flex justify-center mt-2">
+        <MudButton Variant="Variant.Filled" Class="mr-8" OnClick="() => ResetValue(ApplicationStage.Development)">Reset</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => SaveValue(ApplicationStage.Development)">Save</MudButton>
     </MudElement>
 </MudElement>
 
 @code {
-    [Parameter]
-    public required ConfigurationKeyViewModel ConfigurationKey { get; set; }
+    [Parameter] public required ConfigurationKeyViewModel ConfigurationKey { get; set; }
 
-    private StandaloneCodeEditor editor = null!;
+    private StandaloneCodeEditor devEditor = null!;
+    private StandaloneCodeEditor stagingEditor = null!;
+    private StandaloneCodeEditor prodEditor = null!;
 
     protected override async Task OnParametersSetAsync()
     {
-        if (editor is not null)
+        if (devEditor is not null)
         {
-            await ResetValue();
+            await ResetValue(ApplicationStage.Development);
+        }
+        
+        if (stagingEditor is not null)
+        {
+            await ResetValue(ApplicationStage.Staging);
+        }
+        
+        if (prodEditor is not null)
+        {
+            await ResetValue(ApplicationStage.Production);
         }
     }
 
-    private async Task EditorOnDidInit()
+    private async Task EditorOnDidInit(ApplicationStage stage)
     {
-        await ResetValue();
+        await ResetValue(stage);
     }
 
-    private async Task SaveValue()
+    private async Task SaveValue(ApplicationStage stage)
     {
         try
         {
+            var editor = GetStageEditor(stage);
             var val = await editor.GetValue();
-            ConfigurationKey.Value = val;
-            ConfigurationKey.UpdatedAt = DateTimeOffset.Now;
-            await BackendService.AddOrUpdateConfigurationKey(ConfigurationKey);
-
+            var valueModel = GetStageValue(stage);
+            var changedDate = DateTimeOffset.Now;
+            valueModel.Value = val;
+            valueModel.UpdatedAt = changedDate;
+            await BackendService.UpdateConfigurationKeyValue(valueModel);
+            
             Snackbar.Add($"Saved the new value for {ConfigurationKey.Name}", Severity.Success);
             StateHasChanged();
         }
@@ -62,9 +104,26 @@
         }
     }
 
-    private async Task ResetValue()
+    private async Task ResetValue(ApplicationStage stage)
     {
-        await editor.SetValue(ConfigurationKey.Value);
+        var editor = GetStageEditor(stage);
+        await editor.SetValue(GetStageValue(stage).Value);
+    }
+
+    private ConfigurationKeyValueViewModel GetStageValue(ApplicationStage stage)
+    {
+        return ConfigurationKey.Values.Single(i => i.Stage == stage);
+    }
+
+    private StandaloneCodeEditor GetStageEditor(ApplicationStage stage)
+    {
+        return stage switch
+        {
+            ApplicationStage.Development => devEditor,
+            ApplicationStage.Staging => stagingEditor,
+            ApplicationStage.Production => prodEditor,
+            _ => throw new ArgumentOutOfRangeException(nameof(stage))
+        };
     }
 
     private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)

@@ -44,4 +44,15 @@ public class ConfigurationKeyService(IHttpClientFactory factory)
         var response = await _backendClient.DeleteAsync($"{_configurationKeysEndpoint}/{configurationKeyId}");
         response.EnsureSuccessStatusCode();
     }
+
+    public async Task<ConfigurationKeyValueViewModel> UpdateConfigurationKeyValue(ConfigurationKeyValueViewModel configurationKeyValue)
+    {
+        var response = await _backendClient.PostAsJsonAsync(_configurationKeysEndpoint + "/value", configurationKeyValue);
+        response.EnsureSuccessStatusCode();
+
+        var contentString = await response.Content.ReadAsStringAsync();
+        var result = JsonSerializer.Deserialize<ConfigurationKeyValueViewModel>(contentString, _serializerOptions) ?? throw new Exception("Received empty response");
+
+        return result;
+    }
 }

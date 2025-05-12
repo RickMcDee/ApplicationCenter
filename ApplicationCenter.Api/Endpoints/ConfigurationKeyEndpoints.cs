@@ -13,6 +13,8 @@ public static class ConfigurationKeyEndpoints
         group.MapPost("/", AddOrUpdateConfigurationKey);
         group.MapGet("/", GetConfigurationKeys);
         group.MapDelete("/{configurationKeyId}", RemoveConfigurationKey);
+        
+        group.MapPost("/value", UpdateConfigurationKeyValue);
     }
 
     private static async Task<IResult> AddOrUpdateConfigurationKey([FromServices] IConfigurationKeyService service, [FromBody] ConfigurationKeyViewModel configurationKey, [FromQuery] Guid? applicationId)
@@ -34,5 +36,12 @@ public static class ConfigurationKeyEndpoints
         await service.RemoveConfigurationKey(configurationKeyId);
 
         return Results.NoContent();
+    }
+    
+    private static async Task<IResult> UpdateConfigurationKeyValue([FromServices] IConfigurationKeyValueService service, [FromBody] ConfigurationKeyValueViewModel configurationKeyValue)
+    {
+        var newModel = await service.UpdateConfigurationKeyValue(configurationKeyValue);
+
+        return Results.Ok(newModel);
     }
 }

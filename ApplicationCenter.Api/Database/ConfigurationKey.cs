@@ -10,10 +10,11 @@ internal class ConfigurationKey
     public string Description { get; set; } = string.Empty;
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.Now;
     public DateTimeOffset UpdatedAt { get; set; } = DateTimeOffset.Now;
-    public string Value { get; set; } = string.Empty;
 
     public Guid ApplicationId { get; set; }
     public Application Application { get; set; } = null!;
+
+    public ICollection<ConfigurationKeyValue> Values { get; set; } = [];
 
     internal ConfigurationKeyViewModel ToViewModel()
     {
@@ -24,7 +25,7 @@ internal class ConfigurationKey
             Description = Description,
             CreatedAt = CreatedAt,
             UpdatedAt = UpdatedAt,
-            Value = Value
+            Values = [.. Values.Select(i => i.ToViewModel())]
         };
     }
 }

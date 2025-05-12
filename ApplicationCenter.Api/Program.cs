@@ -5,6 +5,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddTransient<IApplicationService, ApplicationService>();
 builder.Services.AddTransient<IConfigurationKeyService, ConfigurationKeyService>();
+builder.Services.AddTransient<IConfigurationKeyValueService, ConfigurationKeyValueService>();
 
 builder.Services.AddDbContextFactory<DatabaseContext>(opt =>
 {
