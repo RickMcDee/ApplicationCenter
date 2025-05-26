@@ -17,7 +17,7 @@
         <MudText Typo="Typo.caption" Style="font-style: italic">Last
             changed: @GetStageValue(ApplicationStage.Production).UpdatedAt.ToString("dd.MM.yyyy HH:mm")</MudText>
     </MudItem>
-    <StandaloneCodeEditor @ref="prodEditor" Id=@("prod-editor-instance-id")
+    <StandaloneCodeEditor @ref="_prodEditor" Id=@("prod-editor-instance-id")
                           ConstructionOptions="EditorConstructionOptions"
                           OnDidInit="() => EditorOnDidInit(ApplicationStage.Production)"/>
     <MudElement Class="d-flex justify-center mt-2">
@@ -34,7 +34,7 @@
         <MudText Typo="Typo.caption" Style="font-style: italic">Last
             changed: @GetStageValue(ApplicationStage.Staging).UpdatedAt.ToString("dd.MM.yyyy HH:mm")</MudText>
     </MudItem>
-    <StandaloneCodeEditor @ref="stagingEditor" Id=@("staging-editor-instance-id")
+    <StandaloneCodeEditor @ref="_stagingEditor" Id=@("staging-editor-instance-id")
                           ConstructionOptions="EditorConstructionOptions"
                           OnDidInit="() => EditorOnDidInit(ApplicationStage.Staging)"/>
     <MudElement Class="d-flex justify-center mt-2">
@@ -51,7 +51,7 @@
         <MudText Typo="Typo.caption" Style="font-style: italic">Last
             changed: @GetStageValue(ApplicationStage.Development).UpdatedAt.ToString("dd.MM.yyyy HH:mm")</MudText>
     </MudItem>
-    <StandaloneCodeEditor @ref="devEditor" Id=@("dev-editor-instance-id")
+    <StandaloneCodeEditor @ref="_devEditor" Id=@("dev-editor-instance-id")
                           ConstructionOptions="EditorConstructionOptions"
                           OnDidInit="() => EditorOnDidInit(ApplicationStage.Development)"/>
     <MudElement Class="d-flex justify-center mt-2">
@@ -69,23 +69,23 @@
     [Parameter]
     public required ConfigurationKey ConfigurationKey { get; set; }
 
-    private StandaloneCodeEditor devEditor = null!;
-    private StandaloneCodeEditor stagingEditor = null!;
-    private StandaloneCodeEditor prodEditor = null!;
+    private StandaloneCodeEditor? _devEditor;
+    private StandaloneCodeEditor? _stagingEditor;
+    private StandaloneCodeEditor? _prodEditor;
 
     protected override async Task OnParametersSetAsync()
     {
-        if (devEditor is not null)
+        if (_devEditor is not null)
         {
             await ResetValue(ApplicationStage.Development);
         }
 
-        if (stagingEditor is not null)
+        if (_stagingEditor is not null)
         {
             await ResetValue(ApplicationStage.Staging);
         }
 
-        if (prodEditor is not null)
+        if (_prodEditor is not null)
         {
             await ResetValue(ApplicationStage.Production);
         }
@@ -133,9 +133,9 @@
     {
         return stage switch
         {
-            ApplicationStage.Development => devEditor,
-            ApplicationStage.Staging => stagingEditor,
-            ApplicationStage.Production => prodEditor,
+            ApplicationStage.Development => _devEditor!,
+            ApplicationStage.Staging => _stagingEditor!,
+            ApplicationStage.Production => _prodEditor!,
             _ => throw new ArgumentOutOfRangeException(nameof(stage)),
         };
     }

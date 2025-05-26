@@ -18,13 +18,13 @@
                           OnDebounceIntervalElapsed="FilterConfigurationKeys"/>
         </MudPaper>
         <MudElement Class="overflow-auto">
-            @if (configurationKeys.Count == 0)
+            @if (_configurationKeys.Count == 0)
             {
                 <MudListItem Disabled="true">
                     <MudText Style="font-style: italic;">No keys for this application</MudText>
                 </MudListItem>
             }
-            @foreach (var item in filteredConfigurationKeys)
+            @foreach (var item in _filteredConfigurationKeys)
             {
                 <MudListItem Value="item" Text="@item.Name" OnClick="_ => OnConfigurationKeySelected(item)">
                     <ListItemWithMenu Text="@item.Name" OnEditClick="async () => await ShowEditDialog(item)"
@@ -38,20 +38,20 @@
 @code {
 
     [Parameter]
-    public Action<ConfigurationKey> OnConfigurationKeySelected { get; set; } = default!;
+    public Action<ConfigurationKey> OnConfigurationKeySelected { get; set; } = null!;
 
-    private Guid ApplicationId;
-    private List<ConfigurationKey> configurationKeys = new();
-    private List<ConfigurationKey> filteredConfigurationKeys = new();
+    private Guid _applicationId;
+    private List<ConfigurationKey> _configurationKeys = [];
+    private List<ConfigurationKey> _filteredConfigurationKeys = [];
 
     public async Task SetNewApplication(Guid applicationId)
     {
-        ApplicationId = applicationId;
+        _applicationId = applicationId;
 
         try
         {
-            configurationKeys = await BackendService.GetConfigurationKeys(ApplicationId);
-            filteredConfigurationKeys = configurationKeys;
+            _configurationKeys = await BackendService.GetConfigurationKeys(_applicationId);
+            _filteredConfigurationKeys = _configurationKeys;
         }
         catch (Exception ex)
         {
@@ -72,8 +72,8 @@
             try
             {
                 await BackendService.RemoveConfigurationKey(configurationKey.Id);
-                configurationKeys.Remove(configurationKey);
-                filteredConfigurationKeys.Remove(configurationKey);
+                _configurationKeys.Remove(configurationKey);
+                _filteredConfigurationKeys.Remove(configurationKey);
                 StateHasChanged();
             }
             catch (Exception ex)
@@ -86,15 +86,15 @@
 
     private async Task ShowAddDialog()
     {
-        var parameters = new DialogParameters<ConfigurationKeyDialog> { { x => x.ApplicationId, ApplicationId } };
+        var parameters = new DialogParameters<ConfigurationKeyDialog> { { x => x.ApplicationId, _applicationId } };
         var dialog = await DialogService.ShowAsync<ConfigurationKeyDialog>("Add ConfigurationKey", parameters);
         var result = await dialog.Result;
 
-        if (result is not null && result.Canceled is false)
+        if (result?.Canceled is false)
         {
             var newKey = (result.Data as ConfigurationKey)!;
-            configurationKeys.Add(newKey);
-            configurationKeys = configurationKeys.OrderBy(x => x.Name).ToList();
+            _configurationKeys.Add(newKey);
+            _configurationKeys = _configurationKeys.OrderBy(x => x.Name).ToList();
             FilterConfigurationKeys(string.Empty);
 
             OnConfigurationKeySelected(newKey);
@@ -103,19 +103,18 @@
 
     private async Task ShowEditDialog(ConfigurationKey configurationKey)
     {
-        var parameters = new DialogParameters<ConfigurationKeyDialog> { { x => x.ApplicationId, ApplicationId }, { x => x.Model, configurationKey } };
-        var dialog = await DialogService.ShowAsync<ConfigurationKeyDialog>("Edit ConfigurationKey", parameters);
-        var result = await dialog.Result;
+        var parameters = new DialogParameters<ConfigurationKeyDialog> { { x => x.ApplicationId, _applicationId }, { x => x.Model, configurationKey } };
+        await DialogService.ShowAsync<ConfigurationKeyDialog>("Edit ConfigurationKey", parameters);
     }
 
     private void FilterConfigurationKeys(string filterText)
     {
         if (string.IsNullOrEmpty(filterText))
         {
-            filteredConfigurationKeys = configurationKeys;
+            _filteredConfigurationKeys = _configurationKeys;
         }
 
-        filteredConfigurationKeys = configurationKeys.Where(x => x.Name.Contains(filterText)).ToList();
+        _filteredConfigurationKeys = _configurationKeys.Where(x => x.Name.Contains(filterText)).ToList();
     }
 
 }

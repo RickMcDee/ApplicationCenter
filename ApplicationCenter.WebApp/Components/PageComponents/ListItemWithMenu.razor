@@ -3,12 +3,12 @@
     <MudMenu Icon="@Icons.Material.Filled.MoreVert" Dense="true" Size="Size.Small">
         @if (OnEditClick is not null)
         {
-            <MudMenuItem Icon="@Icons.Material.Filled.Edit" IconSize="Size.Small" OnClick="OnEditClick">Edit
+            <MudMenuItem Icon="@Icons.Material.Filled.Edit" OnClick="OnEditClick">Edit
             </MudMenuItem>
         }
         @if (OnDeleteClick is not null)
         {
-            <MudMenuItem Icon="@Icons.Material.Filled.Delete" IconSize="Size.Small" OnClick="OnDeleteClick">Delete
+            <MudMenuItem Icon="@Icons.Material.Filled.Delete" OnClick="OnDeleteClick">Delete
             </MudMenuItem>
         }
     </MudMenu>
@@ -20,9 +20,9 @@
     public required string Text { get; set; }
 
     [Parameter]
-    public Action OnDeleteClick { get; set; } = default!;
+    public Action? OnDeleteClick { get; set; }
 
     [Parameter]
-    public Action OnEditClick { get; set; } = default!;
+    public Action? OnEditClick { get; set; }
 
 }

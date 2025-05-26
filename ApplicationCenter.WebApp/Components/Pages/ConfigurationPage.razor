@@ -4,36 +4,36 @@
     <ApplicationList OnApplicationSelected="async app => await SetApplication(app)"/>
     <MudPaper Class="d-flex flex-column flex-grow-1">
         <MudText Typo="Typo.h4" Style="text-align: center;">
-            @(selectedApplication?.Name ?? "Select an application")
+            @(_selectedApplication?.Name ?? "Select an application")
         </MudText>
         <MudElement Class="d-flex flex-row flex-grow-1">
-            <ConfigurationKeyList @ref="configurationKeyList" OnConfigurationKeySelected="SetConfigurationKey"/>
-            @if (selectedKey != null)
+            <ConfigurationKeyList @ref="_configurationKeyList" OnConfigurationKeySelected="SetConfigurationKey"/>
+            @if (_selectedKey != null)
             {
-                <MonacoEditor ConfigurationKey="selectedKey"/>
+                <MonacoEditor ConfigurationKey="_selectedKey"/>
             }
         </MudElement>
     </MudPaper>
 </MudContainer>
 
 @code {
-    private Application? selectedApplication;
-    private ConfigurationKey? selectedKey;
+    private Application? _selectedApplication;
+    private ConfigurationKey? _selectedKey;
 
-    private ConfigurationKeyList configurationKeyList = default!;
+    private ConfigurationKeyList _configurationKeyList = null!;
 
     private async Task SetApplication(Application newApplication)
     {
-        selectedApplication = newApplication;
-        selectedKey = null;
+        _selectedApplication = newApplication;
+        _selectedKey = null;
 
-        await configurationKeyList.SetNewApplication(newApplication.Id);
+        await _configurationKeyList.SetNewApplication(newApplication.Id);
         StateHasChanged();
     }
 
     private void SetConfigurationKey(ConfigurationKey newConfigurationKey)
     {
-        selectedKey = newConfigurationKey;
+        _selectedKey = newConfigurationKey;
         StateHasChanged();
     }
 

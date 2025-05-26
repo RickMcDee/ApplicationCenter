@@ -18,7 +18,7 @@
                           OnDebounceIntervalElapsed="FilterApplications"/>
         </MudPaper>
         <MudElement Class="overflow-auto">
-            @foreach (var item in filteredApplications)
+            @foreach (var item in _filteredApplications)
             {
                 <MudListItem Value="item" OnClick="_ => OnApplicationSelected(item)">
                     <ListItemWithMenu Text="@item.Name" OnEditClick="async () => await ShowEditDialog(item)"
@@ -32,17 +32,17 @@
 @code {
 
     [Parameter]
-    public Action<Application> OnApplicationSelected { get; set; } = default!;
+    public Action<Application> OnApplicationSelected { get; set; } = null!;
 
-    private List<Application> applications = new();
-    private List<Application> filteredApplications = new();
+    private List<Application> _applications = [];
+    private List<Application> _filteredApplications = [];
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            applications = await BackendService.GetApplications();
-            filteredApplications = applications;
+            _applications = await BackendService.GetApplications();
+            _filteredApplications = _applications;
         }
         catch (Exception ex)
         {
@@ -63,8 +63,8 @@
             try
             {
                 await BackendService.RemoveApplication(application.Id);
-                applications.Remove(application);
-                filteredApplications.Remove(application);
+                _applications.Remove(application);
+                _filteredApplications.Remove(application);
 
                 StateHasChanged();
             }
@@ -81,11 +81,11 @@
         var dialog = await DialogService.ShowAsync<ApplicationDialog>("Add Application");
         var result = await dialog.Result;
 
-        if (result is not null && result.Canceled is false)
+        if (result?.Canceled is false)
         {
             var newApplication = (result.Data as Application)!;
-            applications.Add(newApplication);
-            applications = applications.OrderBy(x => x.Name).ToList();
+            _applications.Add(newApplication);
+            _applications = _applications.OrderBy(x => x.Name).ToList();
             FilterApplications(string.Empty);
 
             OnApplicationSelected(newApplication);
@@ -95,18 +95,17 @@
     private async Task ShowEditDialog(Application application)
     {
         var parameters = new DialogParameters<ApplicationDialog> { { x => x.Model, application } };
-        var dialog = await DialogService.ShowAsync<ApplicationDialog>("Edit Application", parameters);
-        var result = await dialog.Result;
+        await DialogService.ShowAsync<ApplicationDialog>("Edit Application", parameters);
     }
 
     private void FilterApplications(string filterText)
     {
         if (string.IsNullOrEmpty(filterText))
         {
-            filteredApplications = applications;
+            _filteredApplications = _applications;
         }
 
-        filteredApplications = applications.Where(x => x.Name.Contains(filterText)).ToList();
+        _filteredApplications = _applications.Where(x => x.Name.Contains(filterText)).ToList();
     }
 
 }
