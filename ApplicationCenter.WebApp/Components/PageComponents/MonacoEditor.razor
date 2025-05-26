@@ -1,6 +1,4 @@
-﻿@using ApplicationCenter.WebApp.Enums
-@using BlazorMonaco.Editor
-
+﻿@using BlazorMonaco.Editor
 @inject ConfigurationKeyValueService BackendService;
 @inject ISnackbar Snackbar
 @inject ILogger<MonacoEditor> Logger
@@ -20,12 +18,16 @@
             changed: @GetStageValue(ApplicationStage.Production).UpdatedAt.ToString("dd.MM.yyyy HH:mm")</MudText>
     </MudItem>
     <StandaloneCodeEditor @ref="prodEditor" Id=@("prod-editor-instance-id")
-                          ConstructionOptions="EditorConstructionOptions" OnDidInit="() => EditorOnDidInit(ApplicationStage.Production)"/>
+                          ConstructionOptions="EditorConstructionOptions"
+                          OnDidInit="() => EditorOnDidInit(ApplicationStage.Production)"/>
     <MudElement Class="d-flex justify-center mt-2">
-        <MudButton Variant="Variant.Filled" Class="mr-8" OnClick="() => ResetValue(ApplicationStage.Production)">Reset</MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => SaveValue(ApplicationStage.Production)">Save</MudButton>
+        <MudButton Variant="Variant.Filled" Class="mr-8" OnClick="() => ResetValue(ApplicationStage.Production)">Reset
+        </MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                   OnClick="() => SaveValue(ApplicationStage.Production)">Save
+        </MudButton>
     </MudElement>
-    
+
     <MudItem Style="margin-top: 1rem;" Class="d-flex justify-space-between align-end">
         <MudText></MudText>
         <MudText Typo="Typo.h6" Class="mb-2">@ApplicationStage.Staging</MudText>
@@ -33,12 +35,16 @@
             changed: @GetStageValue(ApplicationStage.Staging).UpdatedAt.ToString("dd.MM.yyyy HH:mm")</MudText>
     </MudItem>
     <StandaloneCodeEditor @ref="stagingEditor" Id=@("staging-editor-instance-id")
-                          ConstructionOptions="EditorConstructionOptions" OnDidInit="() => EditorOnDidInit(ApplicationStage.Staging)"/>
+                          ConstructionOptions="EditorConstructionOptions"
+                          OnDidInit="() => EditorOnDidInit(ApplicationStage.Staging)"/>
     <MudElement Class="d-flex justify-center mt-2">
-        <MudButton Variant="Variant.Filled" Class="mr-8" OnClick="() => ResetValue(ApplicationStage.Staging)">Reset</MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => SaveValue(ApplicationStage.Staging)">Save</MudButton>
+        <MudButton Variant="Variant.Filled" Class="mr-8" OnClick="() => ResetValue(ApplicationStage.Staging)">Reset
+        </MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => SaveValue(ApplicationStage.Staging)">
+            Save
+        </MudButton>
     </MudElement>
-    
+
     <MudItem Style="margin-top: 1rem;" Class="d-flex justify-space-between align-end">
         <MudText></MudText>
         <MudText Typo="Typo.h6" Class="mb-2">@ApplicationStage.Development</MudText>
@@ -46,15 +52,22 @@
             changed: @GetStageValue(ApplicationStage.Development).UpdatedAt.ToString("dd.MM.yyyy HH:mm")</MudText>
     </MudItem>
     <StandaloneCodeEditor @ref="devEditor" Id=@("dev-editor-instance-id")
-                          ConstructionOptions="EditorConstructionOptions" OnDidInit="() => EditorOnDidInit(ApplicationStage.Development)"/>
+                          ConstructionOptions="EditorConstructionOptions"
+                          OnDidInit="() => EditorOnDidInit(ApplicationStage.Development)"/>
     <MudElement Class="d-flex justify-center mt-2">
-        <MudButton Variant="Variant.Filled" Class="mr-8" OnClick="() => ResetValue(ApplicationStage.Development)">Reset</MudButton>
-        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="() => SaveValue(ApplicationStage.Development)">Save</MudButton>
+        <MudButton Variant="Variant.Filled" Class="mr-8" OnClick="() => ResetValue(ApplicationStage.Development)">
+            Reset
+        </MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Primary"
+                   OnClick="() => SaveValue(ApplicationStage.Development)">Save
+        </MudButton>
     </MudElement>
 </MudElement>
 
 @code {
-    [Parameter] public required ConfigurationKey ConfigurationKey { get; set; }
+
+    [Parameter]
+    public required ConfigurationKey ConfigurationKey { get; set; }
 
     private StandaloneCodeEditor devEditor = null!;
     private StandaloneCodeEditor stagingEditor = null!;
@@ -66,12 +79,12 @@
         {
             await ResetValue(ApplicationStage.Development);
         }
-        
+
         if (stagingEditor is not null)
         {
             await ResetValue(ApplicationStage.Staging);
         }
-        
+
         if (prodEditor is not null)
         {
             await ResetValue(ApplicationStage.Production);
@@ -94,7 +107,7 @@
             valueModel.Value = val;
             valueModel.UpdatedAt = changedDate;
             await BackendService.UpdateConfigurationKeyValue(valueModel);
-            
+
             Snackbar.Add($"Saved the new value for {ConfigurationKey.Name}", Severity.Success);
             StateHasChanged();
         }
@@ -123,17 +136,17 @@
             ApplicationStage.Development => devEditor,
             ApplicationStage.Staging => stagingEditor,
             ApplicationStage.Production => prodEditor,
-            _ => throw new ArgumentOutOfRangeException(nameof(stage))
+            _ => throw new ArgumentOutOfRangeException(nameof(stage)),
         };
     }
 
-    private StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
+    private static StandaloneEditorConstructionOptions EditorConstructionOptions(StandaloneCodeEditor editor)
     {
-        return new StandaloneEditorConstructionOptions
+        return new()
         {
             AutomaticLayout = true,
             Language = "json",
-            Value = string.Empty
+            Value = string.Empty,
         };
     }
 

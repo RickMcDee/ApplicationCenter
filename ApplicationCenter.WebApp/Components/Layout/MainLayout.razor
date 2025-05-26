@@ -1,25 +1,27 @@
 ﻿@inherits LayoutComponentBase
 
-<MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode" />
-<MudPopoverProvider />
-<MudSnackbarProvider />
+<MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode"/>
+<MudPopoverProvider/>
+<MudSnackbarProvider/>
 <MudDialogProvider FullWidth="true"
                    MaxWidth="MaxWidth.Medium"
                    Position="DialogPosition.Center"
                    BackdropClick="false"
-                   CloseOnEscapeKey="true" />
+                   CloseOnEscapeKey="true"/>
 
 <MudLayout>
     <MudAppBar Elevation="1">
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start"
+                       OnClick="@(e => DrawerToggle())"/>
         <MudText Typo="Typo.h5" Class="ml-3">ApplicationCenter</MudText>
-        <MudSpacer />
+        <MudSpacer/>
         <MudButton Variant="Variant.Text">Register</MudButton>
         <MudButton Variant="Variant.Text">Login</MudButton>
-        <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle" />
+        <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle"/>
     </MudAppBar>
-    <MudDrawer id="nav-drawer" @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Docked" Variant="DrawerVariant.Temporary" Elevation="2">
-        <NavMenu />
+    <MudDrawer id="nav-drawer" @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Docked"
+               Variant="DrawerVariant.Temporary" Elevation="2">
+        <NavMenu/>
     </MudDrawer>
     <MudMainContent Style="height: 100vh">
         @Body
@@ -35,8 +37,8 @@
 
 @code {
     private bool _drawerOpen = true;
-    private bool _isDarkMode = false;
-    private MudTheme? _theme = null;
+    private bool _isDarkMode;
+    private MudTheme? _theme;
 
     protected override void OnInitialized()
     {
@@ -46,7 +48,7 @@
         {
             PaletteLight = _lightPalette,
             PaletteDark = _darkPalette,
-            LayoutProperties = new LayoutProperties()
+            LayoutProperties = new(),
         };
     }
 
@@ -104,6 +106,7 @@
         true => Icons.Material.Rounded.AutoMode,
         false => Icons.Material.Outlined.DarkMode,
     };
+
 }
 
 

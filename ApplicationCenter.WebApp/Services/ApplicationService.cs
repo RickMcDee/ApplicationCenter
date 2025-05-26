@@ -5,7 +5,7 @@ namespace ApplicationCenter.WebApp.Services;
 
 internal class ApplicationService(IDbContextFactory<DatabaseContext> dbContextFactory)
 {
-    private readonly IDbContextFactory<Database.DatabaseContext> _dbContextFactory = dbContextFactory;
+    private readonly IDbContextFactory<DatabaseContext> _dbContextFactory = dbContextFactory;
 
     public async Task<List<Application>> GetApplications()
     {
@@ -29,7 +29,7 @@ internal class ApplicationService(IDbContextFactory<DatabaseContext> dbContextFa
             {
                 Id = Guid.NewGuid(),
                 CreatedAt = DateTimeOffset.Now,
-                UpdatedAt = DateTimeOffset.Now
+                UpdatedAt = DateTimeOffset.Now,
             };
 
             await context.Applications.AddAsync(dbEntity);

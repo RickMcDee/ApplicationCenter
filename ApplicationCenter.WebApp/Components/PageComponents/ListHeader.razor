@@ -4,9 +4,11 @@
 </MudElement>
 
 @code {
+
     [Parameter]
     public required string Title { get; set; }
 
     [Parameter]
     public Action OnAddClick { get; set; } = default!;
+
 }

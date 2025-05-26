@@ -4,5 +4,5 @@ public enum ApplicationStage
 {
     Development = 10,
     Staging = 20,
-    Production = 30
+    Production = 30,
 }

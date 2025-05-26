@@ -31,7 +31,7 @@ internal class ConfigurationKeyService(IDbContextFactory<DatabaseContext> dbCont
                 CreatedAt = DateTimeOffset.Now,
                 UpdatedAt = DateTimeOffset.Now,
                 Values = AddConfigurationKeyValues(),
-                ApplicationId = applicationId
+                ApplicationId = applicationId,
             };
 
             await context.ConfigurationKeys.AddAsync(dbEntity);
@@ -62,7 +62,7 @@ internal class ConfigurationKeyService(IDbContextFactory<DatabaseContext> dbCont
         var stages = Enum.GetValues<ApplicationStage>();
         foreach (var stage in stages)
         {
-            var dbValue = new ConfigurationKeyValue()
+            var dbValue = new ConfigurationKeyValue
             {
                 Id = Guid.NewGuid(),
                 Stage = stage,

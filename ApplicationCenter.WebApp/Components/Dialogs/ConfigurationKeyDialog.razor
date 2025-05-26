@@ -9,7 +9,7 @@
                 <MudTextField T="string"
                               Label="Name"
                               @bind-Value="Model.Name"
-                              Immediate="true" />
+                              Immediate="true"/>
             </MudItem>
             <MudItem xs="12">
                 <MudTextField T="string"
@@ -17,17 +17,19 @@
                               @bind-Value="Model.Description"
                               Variant="Variant.Outlined"
                               Immediate="true"
-                              Lines="5" />
+                              Lines="5"/>
             </MudItem>
         </MudGrid>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@string.IsNullOrWhiteSpace(Model.Name)">Ok</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@string.IsNullOrWhiteSpace(Model.Name)">Ok
+        </MudButton>
     </DialogActions>
 </MudDialog>
 
 @code {
+
     [CascadingParameter]
     private IMudDialogInstance MudDialog { get; set; } = default!;
 
@@ -51,5 +53,9 @@
         }
     }
 
-    private void Cancel() => MudDialog.Cancel();
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
 }

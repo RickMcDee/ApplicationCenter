@@ -5,8 +5,9 @@
 
 <MudPaper Width="300px" Class="d-flex">
     <MudList T="ConfigurationKey" Class="d-flex flex-column flex-grow-1">
-        <MudPaper Square="true" Class="pb-2 px-2" Style="border-bottom: thin #e0e0e0; border-bottom-right-radius: 1px; border-bottom-left-radius: 1px;">
-            <ListHeader Title="Keys" OnAddClick="@(async () => await ShowAddDialog())" />
+        <MudPaper Square="true" Class="pb-2 px-2"
+                  Style="border-bottom: thin #e0e0e0; border-bottom-right-radius: 1px; border-bottom-left-radius: 1px;">
+            <ListHeader Title="Keys" OnAddClick="@(async () => await ShowAddDialog())"/>
             <MudTextField T="string"
                           Label="Search"
                           Variant="Variant.Text"
@@ -14,7 +15,7 @@
                           Adornment="Adornment.End"
                           AdornmentIcon="@Icons.Material.Filled.Search"
                           DebounceInterval="300"
-                          OnDebounceIntervalElapsed="FilterConfigurationKeys" />
+                          OnDebounceIntervalElapsed="FilterConfigurationKeys"/>
         </MudPaper>
         <MudElement Class="overflow-auto">
             @if (configurationKeys.Count == 0)
@@ -25,8 +26,9 @@
             }
             @foreach (var item in filteredConfigurationKeys)
             {
-                <MudListItem Value="item" Text="@item.Name" OnClick="(_ => OnConfigurationKeySelected(item))">
-                    <ListItemWithMenu Text="@item.Name" OnEditClick="(async () => await ShowEditDialog(item))" OnDeleteClick="(async () => await ShowDeleteDialog(item))" />
+                <MudListItem Value="item" Text="@item.Name" OnClick="_ => OnConfigurationKeySelected(item)">
+                    <ListItemWithMenu Text="@item.Name" OnEditClick="async () => await ShowEditDialog(item)"
+                                      OnDeleteClick="async () => await ShowDeleteDialog(item)"/>
                 </MudListItem>
             }
         </MudElement>
@@ -34,12 +36,13 @@
 </MudPaper>
 
 @code {
+
     [Parameter]
     public Action<ConfigurationKey> OnConfigurationKeySelected { get; set; } = default!;
 
     private Guid ApplicationId;
-    private List<ConfigurationKey> configurationKeys = new List<ConfigurationKey>();
-    private List<ConfigurationKey> filteredConfigurationKeys = new List<ConfigurationKey>();
+    private List<ConfigurationKey> configurationKeys = new();
+    private List<ConfigurationKey> filteredConfigurationKeys = new();
 
     public async Task SetNewApplication(Guid applicationId)
     {
@@ -52,7 +55,7 @@
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Error while loading configuration keys", Severity.Error);
+            Snackbar.Add("Error while loading configuration keys", Severity.Error);
             Logger.LogError(ex, "Error while loading configuration keys");
         }
     }
@@ -62,7 +65,7 @@
         var confirmation = await DialogService.ShowMessageBox(
             "Delete ConfigurationKey",
             $"This will remove the configurationkey {configurationKey.Name}.",
-            yesText: "Okay", noText: "Cancel");
+            "Okay", "Cancel");
 
         if (confirmation.HasValue && confirmation.Value)
         {
@@ -83,7 +86,7 @@
 
     private async Task ShowAddDialog()
     {
-        var parameters = new DialogParameters<ConfigurationKeyDialog> { { x => x.ApplicationId, ApplicationId }, };
+        var parameters = new DialogParameters<ConfigurationKeyDialog> { { x => x.ApplicationId, ApplicationId } };
         var dialog = await DialogService.ShowAsync<ConfigurationKeyDialog>("Add ConfigurationKey", parameters);
         var result = await dialog.Result;
 
@@ -114,4 +117,5 @@
 
         filteredConfigurationKeys = configurationKeys.Where(x => x.Name.Contains(filterText)).ToList();
     }
+
 }

@@ -1,5 +1,4 @@
-﻿@using ApplicationCenter.WebApp.Enums
-@inject ApplicationService BackendService;
+﻿@inject ApplicationService BackendService;
 @inject ISnackbar Snackbar
 @inject ILogger<ApplicationDialog> Logger
 
@@ -10,7 +9,7 @@
                 <MudTextField T="string"
                               Label="Name"
                               @bind-Value="Model.Name"
-                              Immediate="true" />
+                              Immediate="true"/>
             </MudItem>
             <MudItem xs="4">
                 <MudSelect @bind-Value="Model.Type" Label="Applicationtype">
@@ -26,17 +25,19 @@
                               @bind-Value="Model.Description"
                               Variant="Variant.Outlined"
                               Immediate="true"
-                              Lines="5" />
+                              Lines="5"/>
             </MudItem>
         </MudGrid>
     </DialogContent>
     <DialogActions>
         <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@string.IsNullOrWhiteSpace(Model.Name)">Ok</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@string.IsNullOrWhiteSpace(Model.Name)">Ok
+        </MudButton>
     </DialogActions>
 </MudDialog>
 
 @code {
+
     [CascadingParameter]
     private IMudDialogInstance MudDialog { get; set; } = default!;
 
@@ -57,5 +58,9 @@
         }
     }
 
-    private void Cancel() => MudDialog.Cancel();
+    private void Cancel()
+    {
+        MudDialog.Cancel();
+    }
+
 }

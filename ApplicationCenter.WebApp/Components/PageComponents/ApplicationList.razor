@@ -5,8 +5,9 @@
 
 <MudPaper Width="300px" Class="d-flex">
     <MudList T="Application" Class="d-flex flex-column flex-grow-1">
-        <MudPaper Square="true" Class="pb-2 px-2" Style="border-bottom: thin #e0e0e0; border-bottom-right-radius: 1px; border-bottom-left-radius: 1px;">
-            <ListHeader Title="Applications" OnAddClick="@(async () => await ShowAddDialog())" />
+        <MudPaper Square="true" Class="pb-2 px-2"
+                  Style="border-bottom: thin #e0e0e0; border-bottom-right-radius: 1px; border-bottom-left-radius: 1px;">
+            <ListHeader Title="Applications" OnAddClick="@(async () => await ShowAddDialog())"/>
             <MudTextField T="string"
                           Label="Search"
                           Variant="Variant.Text"
@@ -14,13 +15,14 @@
                           Adornment="Adornment.End"
                           AdornmentIcon="@Icons.Material.Filled.Search"
                           DebounceInterval="200"
-                          OnDebounceIntervalElapsed="FilterApplications" />
+                          OnDebounceIntervalElapsed="FilterApplications"/>
         </MudPaper>
         <MudElement Class="overflow-auto">
             @foreach (var item in filteredApplications)
             {
-                <MudListItem Value="item" OnClick="(_ => OnApplicationSelected(item))">
-                    <ListItemWithMenu Text="@item.Name" OnEditClick="(async () => await ShowEditDialog(item))" OnDeleteClick="(async () => await ShowDeleteDialog(item))" />
+                <MudListItem Value="item" OnClick="_ => OnApplicationSelected(item)">
+                    <ListItemWithMenu Text="@item.Name" OnEditClick="async () => await ShowEditDialog(item)"
+                                      OnDeleteClick="async () => await ShowDeleteDialog(item)"/>
                 </MudListItem>
             }
         </MudElement>
@@ -28,11 +30,12 @@
 </MudPaper>
 
 @code {
+
     [Parameter]
     public Action<Application> OnApplicationSelected { get; set; } = default!;
 
-    private List<Application> applications = new List<Application>();
-    private List<Application> filteredApplications = new List<Application>();
+    private List<Application> applications = new();
+    private List<Application> filteredApplications = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -43,7 +46,7 @@
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Error while loading applications", Severity.Error);
+            Snackbar.Add("Error while loading applications", Severity.Error);
             Logger.LogError(ex, "Error while loading applications");
         }
     }
@@ -53,7 +56,7 @@
         var confirmation = await DialogService.ShowMessageBox(
             "Delete Application",
             $"This will remove the application {application.Name} and all its configuration keys.",
-            yesText: "Okay", noText: "Cancel");
+            "Okay", "Cancel");
 
         if (confirmation.HasValue && confirmation.Value)
         {
@@ -91,7 +94,7 @@
 
     private async Task ShowEditDialog(Application application)
     {
-        var parameters = new DialogParameters<ApplicationDialog> { { x => x.Model, application }, };
+        var parameters = new DialogParameters<ApplicationDialog> { { x => x.Model, application } };
         var dialog = await DialogService.ShowAsync<ApplicationDialog>("Edit Application", parameters);
         var result = await dialog.Result;
     }
@@ -105,4 +108,5 @@
 
         filteredApplications = applications.Where(x => x.Name.Contains(filterText)).ToList();
     }
+
 }

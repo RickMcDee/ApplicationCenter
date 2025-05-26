@@ -9,5 +9,5 @@ public enum ApplicationType
     DesktopApp = 4,
     BackgroundService = 5,
 
-    Other = 99
+    Other = 99,
 }
