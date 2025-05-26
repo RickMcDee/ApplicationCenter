@@ -15,8 +15,15 @@
                        OnClick="@(_ => DrawerToggle())"/>
         <MudText Typo="Typo.h5" Class="ml-3">ApplicationCenter</MudText>
         <MudSpacer/>
-        <MudButton Variant="Variant.Text">Register</MudButton>
-        <MudButton Variant="Variant.Text">Login</MudButton>
+        <AuthorizeView>
+            <Authorized>
+                <MudText Typo="Typo.h5" Class="mr-3" Style="font-size: small">Hello @_userName</MudText>
+                <MudButton Variant="Variant.Text" href="/logout">Logout</MudButton>
+            </Authorized>
+            <NotAuthorized>
+                <MudButton Variant="Variant.Text" href="/login?redirectUri=/configuration">Login</MudButton>
+            </NotAuthorized>
+        </AuthorizeView>
         <MudIconButton Icon="@(DarkLightModeButtonIcon)" Color="Color.Inherit" OnClick="@DarkModeToggle"/>
     </MudAppBar>
     <MudDrawer id="nav-drawer" @bind-Open="_drawerOpen" ClipMode="DrawerClipMode.Docked"
@@ -36,13 +43,23 @@
 </div>
 
 @code {
-    private bool _drawerOpen = true;
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthenticationState { get; set; }
+
+    private string? _userName;
+
+    private bool _drawerOpen;
     private bool _isDarkMode;
     private MudTheme? _theme;
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        base.OnInitialized();
+        if (AuthenticationState is not null)
+        {
+            var state = await AuthenticationState;
+            _userName = state.User.Identity?.Name ?? string.Empty;
+        }
 
         _theme = new()
         {
@@ -50,6 +67,8 @@
             PaletteDark = _darkPalette,
             LayoutProperties = new(),
         };
+
+        await base.OnInitializedAsync();
     }
 
     private void DrawerToggle()
