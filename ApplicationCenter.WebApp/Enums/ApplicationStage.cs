@@ -1,4 +1,4 @@
-﻿namespace ApplicationCenter.Shared.Enums;
+﻿namespace ApplicationCenter.WebApp.Enums;
 
 public enum ApplicationStage
 {

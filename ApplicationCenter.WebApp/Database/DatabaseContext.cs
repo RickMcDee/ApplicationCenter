@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace ApplicationCenter.Api.Database;
+namespace ApplicationCenter.WebApp.Database;
 
 internal class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbContext(options)
 {

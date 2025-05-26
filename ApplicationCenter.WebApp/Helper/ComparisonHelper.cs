@@ -1,4 +1,4 @@
-﻿namespace ApplicationCenter.Shared.Helper;
+﻿namespace ApplicationCenter.WebApp.Helper;
 public static class ComparisonHelper
 {
     public static T TakeNewValueIfChanged<T>(T value, T newValue, ref int updateCount)

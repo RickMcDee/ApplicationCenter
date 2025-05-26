@@ -1,11 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace ApplicationCenter.Api.Database;
+namespace ApplicationCenter.WebApp.Database;
 
 [PrimaryKey("Id")]
-internal class ConfigurationKey
+public class ConfigurationKey
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public Guid Id { get; set; } = Guid.Empty;
     public string Name { get; set; } = string.Empty;
     public string Description { get; set; } = string.Empty;
     public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.Now;
@@ -15,17 +15,4 @@ internal class ConfigurationKey
     public Application Application { get; set; } = null!;
 
     public ICollection<ConfigurationKeyValue> Values { get; set; } = [];
-
-    internal ConfigurationKeyViewModel ToViewModel()
-    {
-        return new ConfigurationKeyViewModel
-        {
-            Id = Id,
-            Name = Name,
-            Description = Description,
-            CreatedAt = CreatedAt,
-            UpdatedAt = UpdatedAt,
-            Values = [.. Values.Select(i => i.ToViewModel())]
-        };
-    }
 }

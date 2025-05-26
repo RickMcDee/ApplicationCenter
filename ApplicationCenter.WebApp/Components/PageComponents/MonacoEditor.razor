@@ -1,6 +1,7 @@
-﻿@using BlazorMonaco.Editor
+﻿@using ApplicationCenter.WebApp.Enums
+@using BlazorMonaco.Editor
 
-@inject ConfigurationKeyService BackendService;
+@inject ConfigurationKeyValueService BackendService;
 @inject ISnackbar Snackbar
 @inject ILogger<MonacoEditor> Logger
 
@@ -53,7 +54,7 @@
 </MudElement>
 
 @code {
-    [Parameter] public required ConfigurationKeyViewModel ConfigurationKey { get; set; }
+    [Parameter] public required ConfigurationKey ConfigurationKey { get; set; }
 
     private StandaloneCodeEditor devEditor = null!;
     private StandaloneCodeEditor stagingEditor = null!;
@@ -110,7 +111,7 @@
         await editor.SetValue(GetStageValue(stage).Value);
     }
 
-    private ConfigurationKeyValueViewModel GetStageValue(ApplicationStage stage)
+    private ConfigurationKeyValue GetStageValue(ApplicationStage stage)
     {
         return ConfigurationKey.Values.Single(i => i.Stage == stage);
     }

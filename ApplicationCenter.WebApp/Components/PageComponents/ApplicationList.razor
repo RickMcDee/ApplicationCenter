@@ -4,7 +4,7 @@
 @inject ILogger<ApplicationDialog> Logger
 
 <MudPaper Width="300px" Class="d-flex">
-    <MudList T="ApplicationViewModel" Class="d-flex flex-column flex-grow-1">
+    <MudList T="Application" Class="d-flex flex-column flex-grow-1">
         <MudPaper Square="true" Class="pb-2 px-2" Style="border-bottom: thin #e0e0e0; border-bottom-right-radius: 1px; border-bottom-left-radius: 1px;">
             <ListHeader Title="Applications" OnAddClick="@(async () => await ShowAddDialog())" />
             <MudTextField T="string"
@@ -29,10 +29,10 @@
 
 @code {
     [Parameter]
-    public Action<ApplicationViewModel> OnApplicationSelected { get; set; } = default!;
+    public Action<Application> OnApplicationSelected { get; set; } = default!;
 
-    private List<ApplicationViewModel> applications = new List<ApplicationViewModel>();
-    private List<ApplicationViewModel> filteredApplications = new List<ApplicationViewModel>();
+    private List<Application> applications = new List<Application>();
+    private List<Application> filteredApplications = new List<Application>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -48,7 +48,7 @@
         }
     }
 
-    private async Task ShowDeleteDialog(ApplicationViewModel application)
+    private async Task ShowDeleteDialog(Application application)
     {
         var confirmation = await DialogService.ShowMessageBox(
             "Delete Application",
@@ -80,7 +80,7 @@
 
         if (result is not null && result.Canceled is false)
         {
-            var newApplication = (result.Data as ApplicationViewModel)!;
+            var newApplication = (result.Data as Application)!;
             applications.Add(newApplication);
             applications = applications.OrderBy(x => x.Name).ToList();
             FilterApplications(string.Empty);
@@ -89,7 +89,7 @@
         }
     }
 
-    private async Task ShowEditDialog(ApplicationViewModel application)
+    private async Task ShowEditDialog(Application application)
     {
         var parameters = new DialogParameters<ApplicationDialog> { { x => x.Model, application }, };
         var dialog = await DialogService.ShowAsync<ApplicationDialog>("Edit Application", parameters);

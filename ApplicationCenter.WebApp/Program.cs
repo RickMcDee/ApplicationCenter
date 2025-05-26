@@ -1,5 +1,5 @@
 ﻿using ApplicationCenter.WebApp.Components;
-using ApplicationCenter.WebApp.Services;
+using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,10 +13,16 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddScoped<ApplicationService>();
 builder.Services.AddScoped<ConfigurationKeyService>();
-builder.Services.AddHttpClient("BackendClient", config =>
+builder.Services.AddScoped<ConfigurationKeyValueService>();
+
+builder.Services.AddDbContextFactory<DatabaseContext>(opt =>
 {
-    var backendUrl = builder.Configuration.GetValue<string>("ServiceConfiguration:BackendUrl") ?? throw new Exception($"Missing key in AppSettings: ServiceConfiguration:BackendUrl");
-    config.BaseAddress = new Uri(backendUrl);
+    var connectionString = builder.Configuration.GetConnectionString("Database");
+    opt.UseNpgsql(connectionString);
+#if DEBUG
+    opt.EnableDetailedErrors();
+    opt.EnableSensitiveDataLogging();
+#endif
 });
 
 var app = builder.Build();
@@ -30,7 +36,6 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 
 app.UseAntiforgery();
 

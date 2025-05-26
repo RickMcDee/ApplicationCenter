@@ -1,4 +1,5 @@
-﻿@inject ApplicationService BackendService;
+﻿@using ApplicationCenter.WebApp.Enums
+@inject ApplicationService BackendService;
 @inject ISnackbar Snackbar
 @inject ILogger<ApplicationDialog> Logger
 
@@ -40,7 +41,7 @@
     private IMudDialogInstance MudDialog { get; set; } = default!;
 
     [Parameter]
-    public ApplicationViewModel Model { get; set; } = new() { Name = string.Empty };
+    public Application Model { get; set; } = new() { Name = string.Empty };
 
     private async Task Submit()
     {

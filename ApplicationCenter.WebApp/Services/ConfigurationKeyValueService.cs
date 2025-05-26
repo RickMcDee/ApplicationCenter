@@ -1,12 +1,13 @@
+using ApplicationCenter.WebApp.Helper;
 using Microsoft.EntityFrameworkCore;
 
-namespace ApplicationCenter.Api.Services;
+namespace ApplicationCenter.WebApp.Services;
 
-internal class ConfigurationKeyValueService(IDbContextFactory<Database.DatabaseContext> dbContextFactory) : IConfigurationKeyValueService
+internal class ConfigurationKeyValueService(IDbContextFactory<DatabaseContext> dbContextFactory)
 {
-    private readonly IDbContextFactory<Database.DatabaseContext> _dbContextFactory = dbContextFactory;
+    private readonly IDbContextFactory<DatabaseContext> _dbContextFactory = dbContextFactory;
 
-    public async Task<ConfigurationKeyValueViewModel> UpdateConfigurationKeyValue(ConfigurationKeyValueViewModel configurationKeyValue)
+    public async Task<ConfigurationKeyValue> UpdateConfigurationKeyValue(ConfigurationKeyValue configurationKeyValue)
     {
         await using var context = await _dbContextFactory.CreateDbContextAsync();
         var keyValue = await context.ConfigurationKeyValues.FindAsync(configurationKeyValue.Id) ?? throw new KeyNotFoundException($"ConfigurationKeyValue {configurationKeyValue.Id} not found");
@@ -20,6 +21,6 @@ internal class ConfigurationKeyValueService(IDbContextFactory<Database.DatabaseC
             await context.SaveChangesAsync();
         }
 
-        return keyValue.ToViewModel();
+        return keyValue;
     }
 }

@@ -17,12 +17,12 @@
 </MudContainer>
 
 @code {
-    private ApplicationViewModel? selectedApplication;
-    private ConfigurationKeyViewModel? selectedKey;
+    private Application? selectedApplication;
+    private ConfigurationKey? selectedKey;
 
     private ConfigurationKeyList configurationKeyList = default!;
 
-    private async Task SetApplication(ApplicationViewModel newApplication)
+    private async Task SetApplication(Application newApplication)
     {
         selectedApplication = newApplication;
         selectedKey = null;
@@ -31,7 +31,7 @@
         StateHasChanged();
     }
 
-    private void SetConfigurationKey(ConfigurationKeyViewModel newConfigurationKey)
+    private void SetConfigurationKey(ConfigurationKey newConfigurationKey)
     {
         selectedKey = newConfigurationKey;
         StateHasChanged();

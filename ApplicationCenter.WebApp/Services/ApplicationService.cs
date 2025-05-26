@@ -1,34 +1,63 @@
-﻿using ApplicationCenter.Shared.Models;
-using System.Text.Json;
+﻿using ApplicationCenter.WebApp.Helper;
+using Microsoft.EntityFrameworkCore;
 
 namespace ApplicationCenter.WebApp.Services;
 
-public class ApplicationService(IHttpClientFactory factory)
+internal class ApplicationService(IDbContextFactory<DatabaseContext> dbContextFactory)
 {
-    private readonly HttpClient _backendClient = factory.CreateClient("BackendClient");
-    private readonly JsonSerializerOptions _serializerOptions = new() { PropertyNameCaseInsensitive = true };
-    private const string _applicationsEndpoint = "applications";
+    private readonly IDbContextFactory<Database.DatabaseContext> _dbContextFactory = dbContextFactory;
 
-    public async Task<List<ApplicationViewModel>> GetApplications()
+    public async Task<List<Application>> GetApplications()
     {
-        var response = await _backendClient.GetFromJsonAsync<List<ApplicationViewModel>>(_applicationsEndpoint) ?? throw new Exception("Received empty response");
-        return response;
-    }
-
-    public async Task<ApplicationViewModel> AddApplication(ApplicationViewModel application)
-    {
-        var response = await _backendClient.PostAsJsonAsync(_applicationsEndpoint, application);
-        response.EnsureSuccessStatusCode();
-
-        var contentString = await response.Content.ReadAsStringAsync();
-        var result = JsonSerializer.Deserialize<ApplicationViewModel>(contentString, _serializerOptions) ?? throw new Exception("Received empty response");
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
+        var result = await context.Applications
+            .Include(i => i.ConfigurationKeys)
+            .OrderBy(i => i.Name)
+            .ToListAsync();
 
         return result;
     }
 
+    public async Task<Application> AddApplication(Application application)
+    {
+        Application dbEntity;
+
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
+        if (application.Id == Guid.Empty)
+        {
+            dbEntity = new()
+            {
+                Id = Guid.NewGuid(),
+                CreatedAt = DateTimeOffset.Now,
+                UpdatedAt = DateTimeOffset.Now
+            };
+
+            await context.Applications.AddAsync(dbEntity);
+        }
+        else
+        {
+            dbEntity = await context.Applications.FindAsync(application.Id) ?? throw new KeyNotFoundException($"No Application with id {application.Id} in database");
+        }
+
+        var updateCount = 0;
+        dbEntity.Name = ComparisonHelper.TakeNewValueIfChanged(dbEntity.Name, application.Name, ref updateCount);
+        dbEntity.Type = ComparisonHelper.TakeNewValueIfChanged(dbEntity.Type, application.Type, ref updateCount);
+        dbEntity.Description = ComparisonHelper.TakeNewValueIfChanged(dbEntity.Description, application.Description, ref updateCount);
+
+        if (updateCount > 0)
+        {
+            dbEntity.UpdatedAt = DateTimeOffset.Now;
+            await context.SaveChangesAsync();
+        }
+
+        return dbEntity;
+    }
+
     public async Task RemoveApplication(Guid applicationId)
     {
-        var response = await _backendClient.DeleteAsync($"{_applicationsEndpoint}/{applicationId}");
-        response.EnsureSuccessStatusCode();
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
+        var dbEntity = await context.Applications.FindAsync(applicationId) ?? throw new KeyNotFoundException($"No Application with id {applicationId} in database");
+        context.Applications.Remove(dbEntity);
+        await context.SaveChangesAsync();
     }
 }
