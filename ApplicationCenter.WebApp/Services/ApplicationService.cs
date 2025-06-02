@@ -27,7 +27,7 @@ internal class ApplicationService(IDbContextFactory<DatabaseContext> dbContextFa
         {
             dbEntity = new()
             {
-                Id = Guid.NewGuid(),
+                Id = Guid.CreateVersion7(),
                 CreatedAt = DateTimeOffset.Now,
                 UpdatedAt = DateTimeOffset.Now,
             };

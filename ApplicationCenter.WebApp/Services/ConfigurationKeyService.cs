@@ -27,7 +27,7 @@ internal class ConfigurationKeyService(IDbContextFactory<DatabaseContext> dbCont
         {
             dbEntity = new()
             {
-                Id = Guid.NewGuid(),
+                Id = Guid.CreateVersion7(),
                 CreatedAt = DateTimeOffset.Now,
                 UpdatedAt = DateTimeOffset.Now,
                 Values = AddConfigurationKeyValues(),
@@ -64,7 +64,7 @@ internal class ConfigurationKeyService(IDbContextFactory<DatabaseContext> dbCont
         {
             var dbValue = new ConfigurationKeyValue
             {
-                Id = Guid.NewGuid(),
+                Id = Guid.CreateVersion7(),
                 Stage = stage,
                 Value = string.Empty,
                 CreatedAt = DateTimeOffset.Now,
