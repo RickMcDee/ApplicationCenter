@@ -17,6 +17,9 @@ internal class UserService(IDbContextFactory<UserDataContext> dbContextFactory)
             return result;
         }
 
+        user.LastSeenAt = DateTimeOffset.Now;
+        await context.SaveChangesAsync();
+
         result.Id = user.Id;
         result.Name = user.Name;
         result.EMail = user.EMail;
@@ -27,6 +30,25 @@ internal class UserService(IDbContextFactory<UserDataContext> dbContextFactory)
 
     public async Task<AppUserState> StoreNewUser(string userId, string userName, string userMail)
     {
-        throw new NotImplementedException();
+        await using var context = await _dbContextFactory.CreateDbContextAsync();
+        var user = await context.Users.AddAsync(new()
+        {
+            Id = Guid.CreateVersion7(),
+            Name = userName,
+            EMail = userMail,
+            ExternalId = userId,
+            AuthentificationProvider = "auth0",
+            CreatedAt = DateTimeOffset.Now,
+            LastSeenAt = DateTimeOffset.Now,
+        });
+        await context.SaveChangesAsync();
+
+        return new()
+        {
+            Id = user.Entity.Id,
+            Name = user.Entity.Name,
+            EMail = user.Entity.EMail,
+            IsKnown = true,
+        };
     }
 }
