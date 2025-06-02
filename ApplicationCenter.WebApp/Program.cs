@@ -1,8 +1,8 @@
 ﻿using ApplicationCenter.WebApp.Components;
+using ApplicationCenter.WebApp.Helper;
 using Auth0.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
-using Microsoft.EntityFrameworkCore;
 using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,19 +21,15 @@ builder.Services.AddAuth0WebAppAuthentication(options =>
     options.Scope = "openid profile email";
 });
 
-builder.Services.AddScoped<ApplicationService>();
-builder.Services.AddScoped<ConfigurationKeyService>();
-builder.Services.AddScoped<ConfigurationKeyValueService>();
+builder.Services.AddScoped<AppUserState>();
 
-builder.Services.AddDbContextFactory<DatabaseContext>(opt =>
-{
-    var connectionString = builder.Configuration.GetConnectionString("Database");
-    opt.UseNpgsql(connectionString);
-#if DEBUG
-    opt.EnableDetailedErrors();
-    opt.EnableSensitiveDataLogging();
-#endif
-});
+builder.Services.AddTransient<UserService>();
+
+builder.Services.AddTransient<ApplicationService>();
+builder.Services.AddTransient<ConfigurationKeyService>();
+builder.Services.AddTransient<ConfigurationKeyValueService>();
+
+builder.Services.AddDatabaseContext(builder.Configuration.GetConnectionString("Database"));
 
 var app = builder.Build();
 

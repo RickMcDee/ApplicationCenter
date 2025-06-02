@@ -1,4 +1,10 @@
-﻿@inherits LayoutComponentBase
+﻿@using System.Security.Authentication
+@using System.Security.Claims
+
+@inject UserService UserService;
+@inject AppUserState AppUserState;
+
+@inherits LayoutComponentBase
 
 <MudThemeProvider Theme="@_theme" IsDarkMode="_isDarkMode"/>
 <MudPopoverProvider/>
@@ -17,7 +23,7 @@
         <MudSpacer/>
         <AuthorizeView>
             <Authorized>
-                <MudText Typo="Typo.h5" Class="mr-3" Style="font-size: small">Hello @_userName</MudText>
+                <MudText Typo="Typo.h5" Class="mr-3" Style="font-size: small">Hello @AppUserState.Name</MudText>
                 <MudButton Variant="Variant.Text" href="/logout">Logout</MudButton>
             </Authorized>
             <NotAuthorized>
@@ -47,8 +53,6 @@
     [CascadingParameter]
     private Task<AuthenticationState>? AuthenticationState { get; set; }
 
-    private string? _userName;
-
     private bool _drawerOpen;
     private bool _isDarkMode;
     private MudTheme? _theme;
@@ -58,7 +62,20 @@
         if (AuthenticationState is not null)
         {
             var state = await AuthenticationState;
-            _userName = state.User.Identity?.Name ?? string.Empty;
+            if (state.User.Identity?.IsAuthenticated ?? false)
+            {
+                var userId = state.User.FindFirstValue("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier") ?? throw new AuthenticationException();
+                var userState = await UserService.GetUserData(userId);
+
+                if (userState.IsKnown is false)
+                {
+                    var userName = state.User.FindFirstValue("name") ?? throw new AuthenticationException();
+                    var userMail = state.User.FindFirstValue("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress") ?? throw new AuthenticationException();
+                    userState = await UserService.StoreNewUser(userId, userName, userMail);
+                }
+
+                AppUserState = userState;
+            }
         }
 
         _theme = new()
