@@ -6,7 +6,7 @@ public static class DependencyInjectionHelper
 {
     internal static IServiceCollection AddDatabaseContext(this IServiceCollection services, string? connectionString)
     {
-        services.AddDbContextFactory<DatabaseContext>(opt =>
+        services.AddDbContextFactory<ConfigurationDataContext>(opt =>
         {
             opt.UseNpgsql(connectionString);
 #if DEBUG

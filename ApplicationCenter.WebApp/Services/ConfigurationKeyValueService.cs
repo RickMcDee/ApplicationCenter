@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ApplicationCenter.WebApp.Services;
 
-internal class ConfigurationKeyValueService(IDbContextFactory<DatabaseContext> dbContextFactory)
+internal class ConfigurationKeyValueService(IDbContextFactory<ConfigurationDataContext> dbContextFactory)
 {
-    private readonly IDbContextFactory<DatabaseContext> _dbContextFactory = dbContextFactory;
+    private readonly IDbContextFactory<ConfigurationDataContext> _dbContextFactory = dbContextFactory;
 
     public async Task<ConfigurationKeyValue> UpdateConfigurationKeyValue(ConfigurationKeyValue configurationKeyValue)
     {

@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ApplicationCenter.WebApp.Services;
 
-internal class ConfigurationKeyService(IDbContextFactory<DatabaseContext> dbContextFactory)
+internal class ConfigurationKeyService(IDbContextFactory<ConfigurationDataContext> dbContextFactory)
 {
-    private readonly IDbContextFactory<DatabaseContext> _dbContextFactory = dbContextFactory;
+    private readonly IDbContextFactory<ConfigurationDataContext> _dbContextFactory = dbContextFactory;
 
     public async Task<List<ConfigurationKey>> GetConfigurationKeys(Guid applicationId)
     {

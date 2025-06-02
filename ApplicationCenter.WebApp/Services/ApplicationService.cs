@@ -3,9 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ApplicationCenter.WebApp.Services;
 
-internal class ApplicationService(IDbContextFactory<DatabaseContext> dbContextFactory)
+internal class ApplicationService(IDbContextFactory<ConfigurationDataContext> dbContextFactory)
 {
-    private readonly IDbContextFactory<DatabaseContext> _dbContextFactory = dbContextFactory;
+    private readonly IDbContextFactory<ConfigurationDataContext> _dbContextFactory = dbContextFactory;
 
     public async Task<List<Application>> GetApplications()
     {

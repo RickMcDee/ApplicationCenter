@@ -2,9 +2,9 @@
 
 namespace ApplicationCenter.WebApp.Database;
 
-internal class DatabaseContext(DbContextOptions<DatabaseContext> options) : DbContext(options)
+internal class ConfigurationDataContext(DbContextOptions<ConfigurationDataContext> options) : DbContext(options)
 {
-    static DatabaseContext()
+    static ConfigurationDataContext()
     {
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
     }
