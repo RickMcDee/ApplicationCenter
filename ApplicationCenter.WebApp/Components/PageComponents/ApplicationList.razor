@@ -32,7 +32,7 @@
 @code {
 
     [Parameter]
-    internal Action<Application> OnApplicationSelected { get; set; } = null!;
+    public Action<Application> OnApplicationSelected { get; set; } = null!;
 
     private List<Application> _applications = [];
     private List<Application> _filteredApplications = [];

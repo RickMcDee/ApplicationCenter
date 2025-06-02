@@ -37,7 +37,7 @@
     public required Guid ApplicationId { get; set; }
 
     [Parameter]
-    internal ConfigurationKey Model { get; set; } = new() { Name = string.Empty };
+    public ConfigurationKey Model { get; set; } = new() { Name = string.Empty };
 
     private async Task Submit()
     {

@@ -3,7 +3,7 @@
 namespace ApplicationCenter.WebApp.Database.ConfigurationData;
 
 [PrimaryKey("Id")]
-internal class ConfigurationKeyValue
+public class ConfigurationKeyValue
 {
     public Guid Id { get; set; } = Guid.Empty;
     public ApplicationStage Stage { get; set; } = ApplicationStage.Development;

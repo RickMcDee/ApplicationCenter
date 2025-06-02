@@ -38,7 +38,7 @@
 @code {
 
     [Parameter]
-    internal Action<ConfigurationKey> OnConfigurationKeySelected { get; set; } = null!;
+    public Action<ConfigurationKey> OnConfigurationKeySelected { get; set; } = null!;
 
     private Guid _applicationId;
     private List<ConfigurationKey> _configurationKeys = [];
