@@ -67,7 +67,7 @@
 @code {
 
     [Parameter]
-    public required ConfigurationKey ConfigurationKey { get; set; }
+    internal ConfigurationKey? ConfigurationKey { get; set; }
 
     private StandaloneCodeEditor? _devEditor;
     private StandaloneCodeEditor? _stagingEditor;
